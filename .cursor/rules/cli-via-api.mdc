@@ -1,0 +1,33 @@
+---
+description: CLI must delegate business logic to the API, not AWS/DynamoDB directly
+globs: "**/*.{go,md}"
+alwaysApply: true
+---
+
+# CLI via API only
+
+All `tt` functionality must call the Time Tracker HTTP API. The CLI is a thin client — it does not own business rules or persistence.
+
+## Do
+
+- Use `internal/api` (or equivalent) HTTP client for every mutation and query
+- Read/write config and credentials locally only (`~/.tt/config`)
+- Surface API errors to the user; do not re-implement validation the API already enforces
+
+## Do not
+
+- Import or call AWS SDKs (`dynamodb`, `s3`, etc.) for application data
+- Embed DynamoDB PK/SK logic, entity shapes, or integrity rules in CLI code
+- Add "fast path" scripts that bypass the API for writes
+
+## Examples
+
+```go
+// ❌ BAD — direct DynamoDB in CLI
+svc.PutItem(ctx, &dynamodb.PutItemInput{...})
+
+// ✅ GOOD — API does the work
+client.CreatePerson(ctx, req)
+```
+
+When the API lacks an endpoint for a workflow, add it in **time-tracker-api** first, then wire the CLI to that endpoint.
