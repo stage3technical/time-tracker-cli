@@ -1,6 +1,6 @@
-# Binaries
-tt
-tt.exe
+# Binaries (root only — do not match cmd/tt/)
+/tt
+/tt.exe
 *.exe
 *.dll
 *.so
