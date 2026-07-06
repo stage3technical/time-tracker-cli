@@ -41,6 +41,7 @@ tt health && tt me
 
 - [docs/CLI.md](docs/CLI.md) — full command reference
 - [docs/PLAN.md](docs/PLAN.md) — design and roadmap
+- [CONTRIBUTING.md](CONTRIBUTING.md) — PR workflow
 
 ## Config
 
