@@ -34,7 +34,7 @@ tt health && tt me
 - `tt configure`, `tt configure list`, `tt configure set`
 - `tt health`, `tt me`
 - `tt persons` — list, get, update, import, manager get/set, subordinates list
-- `tt api` — generic METHOD + path escape hatch
+- `tt api` — generic METHOD + path escape hatch (**use for projects until Phase 2** — `tt projects` not implemented yet)
 - `--output json|pretty`, env overrides (`TT_API_*`)
 
 ## Documentation
