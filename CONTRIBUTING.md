@@ -3,7 +3,7 @@
 ## Pull requests
 
 - Use a feature branch (`feature/…`, `fix/…`, or `docs/…`) — not `chore/`
-- Open PRs as **ready for review** (not draft) — `gh pr create` without `--draft`
+- Open PRs as **ready for review** (not draft) — `gh pr create --base main` without `--draft` (this repo has no `develop` branch)
 - **User merges** — do not run `gh pr merge` unless explicitly asked
 - When merging, default to **Create a merge commit** unless squash/rebase is requested
 

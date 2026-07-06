@@ -6,12 +6,13 @@ alwaysApply: true
 # Git branches and PRs
 
 - **Almost always** use a feature branch and open a PR — do not push directly to `develop`/`main` unless the user explicitly asks
+- **Default PR base is `develop`** when the repo has a `develop` branch; otherwise `main`
 - **Never** use `chore/` as a branch name prefix — use `feature/`, `fix/`, or `docs/` instead
 - Default: `feature/<short-description>` for new work
 
 ## Open PRs; user merges
 
-- **Always** open a PR with `gh pr create` and return the URL when shipping work — do not stop at a local commit or branch push
+- **Always** open a PR with `gh pr create --base main` and return the URL when shipping work — do not stop at a local commit or branch push
 - **Always open PRs as ready for review** — do not pass `--draft` to `gh pr create` unless the user explicitly asks; if a PR is draft, run `gh pr ready`
 - **Never** run `gh pr merge` or merge a PR unless the user **explicitly** asks in that message
 - **Never** use squash merge (`gh pr merge --squash`) unless the user **explicitly** requests squash
