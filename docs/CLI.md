@@ -1,6 +1,6 @@
 # `tt` command reference
 
-Cross-platform CLI for the [Time Tracker API](https://github.com/stage3technical/time-tracker-api).
+Cross-platform CLI for the [BLVD Timesheet API](https://github.com/stage3technical/time-tracker-api).
 
 See also: [PLAN.md](PLAN.md) (design), [README](../README.md) (install).
 

@@ -2,7 +2,7 @@
 
 ## Scope
 
-This CLI wraps the **Time Tracker HTTP API only** — no direct DynamoDB access. See `.cursor/rules/cli-via-api.mdc`.
+This CLI wraps the **BLVD Timesheet HTTP API only** — no direct DynamoDB access. See `.cursor/rules/cli-via-api.mdc`.
 
 ## Git and PR workflow
 

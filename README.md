@@ -1,6 +1,6 @@
 # time-tracker-cli (`tt`)
 
-Cross-platform command-line client for the [Time Tracker API](https://github.com/stage3technical/time-tracker-api). Single static Go binary for Windows and Linux/macOS.
+Cross-platform command-line client for the [BLVD Timesheet API](https://github.com/stage3technical/time-tracker-api). Single static Go binary for Windows and Linux/macOS.
 
 ## Quick start
 
@@ -68,4 +68,4 @@ CI runs tests and builds on Ubuntu and Windows (see [.github/workflows/ci.yml](.
 
 ## License
 
-Internal Stage3 Technical tooling.
+Internal BLVD Interactive tooling.
