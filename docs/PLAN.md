@@ -8,7 +8,7 @@
 | Language | **Go** (native binary, Windows + Linux) |
 | API scope | **Implemented endpoints only** (~70 routes in [time-tracker-api `IMPLEMENTED_ROUTES`](https://github.com/stage3technical/time-tracker-api/blob/main/src/time_tracker_api/routes/v1_stubs.py) plus `GET /timesheets/{person_id}`, `POST /persons/import`, `GET /health`, `GET /me`, `POST /items`) |
 | Transport | HTTPS + `Authorization: Bearer <JWT>` |
-| Repo | [`stage3technical/time-tracker-cli`](https://github.com/stage3technical/time-tracker-cli) |
+| Repo | [`time-tracker-cli`](https://github.com/stage3technical/time-tracker-cli) |
 
 ## Architecture
 
