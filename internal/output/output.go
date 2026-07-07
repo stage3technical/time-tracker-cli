@@ -140,6 +140,27 @@ func (w *Writer) PrintEntriesList(data []byte) error {
 	return tw.Flush()
 }
 
+// PrintCompanyRolesList renders company roles in pretty mode.
+func (w *Writer) PrintCompanyRolesList(data []byte) error {
+	if w.Mode == ModeJSON {
+		return w.PrintJSON(data)
+	}
+	var roles []map[string]any
+	if err := json.Unmarshal(data, &roles); err != nil {
+		return w.PrintJSON(data)
+	}
+	tw := tabwriter.NewWriter(w.Stdout, 0, 0, 2, ' ', 0)
+	_, _ = fmt.Fprintln(tw, "ID\tNAME\tDESCRIPTION")
+	for _, r := range roles {
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\n",
+			strVal(r, "id"),
+			strVal(r, "name"),
+			strVal(r, "description"),
+		)
+	}
+	return tw.Flush()
+}
+
 // PrintTimesheetWeeksList renders timesheet week summaries in pretty mode.
 func (w *Writer) PrintTimesheetWeeksList(data []byte) error {
 	if w.Mode == ModeJSON {

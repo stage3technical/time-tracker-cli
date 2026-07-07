@@ -64,7 +64,11 @@ Legend: **implemented** = first-class `tt` subcommand · **api** = use `tt api` 
 
 | Action | Status | Command |
 |--------|--------|---------|
-| CRUD company roles | api | `tt api GET /api/v1/company-roles` etc. |
+| List roles | **implemented** | `tt company-roles list` |
+| Get role | **implemented** | `tt company-roles get ROLE_ID` |
+| Create role | **implemented** | `tt company-roles create --name "AEM Architect"` |
+| Update role | **implemented** | `tt company-roles update ROLE_ID --description "..."` |
+| Delete role | **implemented** | `tt company-roles delete ROLE_ID --confirm` |
 
 ---
 
