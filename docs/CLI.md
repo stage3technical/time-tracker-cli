@@ -10,14 +10,17 @@ See also: [ACTIONS.md](ACTIONS.md) (commands by API group), [PLAN.md](PLAN.md) (
 go install github.com/stage3technical/time-tracker-cli/cmd/tt@latest
 ```
 
-Or build from source (embeds `dev` version unless you pass `-ldflags`):
+Or build from source (embeds git tag/commit):
 
 ```bash
-git clone https://github.com/stage3technical/time-tracker-cli.git
-cd time-tracker-cli
-go build -o tt.exe ./cmd/tt    # Windows
-tt version
+./scripts/build.sh          # Linux / macOS / WSL
 ```
+
+```powershell
+.\scripts\build.ps1         # Windows
+```
+
+Plain `go build -o tt.exe ./cmd/tt` shows `dev (commit none, built unknown)`.
 
 **Version:** `tt version` or `tt --version`. Merges to `main` auto-tag **semver** releases (`v0.1.0`, …) via GitHub Actions — bump rules: `feat:` → minor, breaking/`!` → major, else patch.
 
