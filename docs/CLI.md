@@ -187,12 +187,18 @@ Timesheet workflow — see **[ACTIONS.md](ACTIONS.md)** § Advanced Workflow.
 `--week-start` defaults to **this Monday** (local timezone) when omitted.
 
 ```bash
+tt timesheets list --email marlene.bockler@blvdinteractive.com
+tt timesheets list --email marlene.bockler@blvdinteractive.com --before 2026-07-06
 tt timesheets get --email pam@blvdinteractive.com
 tt timesheets unlock --profile prod --email pam@blvdinteractive.com
+tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --week-start 2026-06-30 --confirm
+tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --before 2026-07-06 --confirm
 tt timesheets submit --person-id UUID --week-start 2026-07-06
 tt timesheets approve --person-id UUID
 tt timesheets reject --email user@blvdinteractive.com
 ```
+
+Pretty mode columns for `list`: `WEEK_START`, `ENTRIES`, `HOURS`, `SUBMISSION`, `WEEK_LOCK`.
 
 ### `tt entries`
 

@@ -140,6 +140,39 @@ func (w *Writer) PrintEntriesList(data []byte) error {
 	return tw.Flush()
 }
 
+// PrintTimesheetWeeksList renders timesheet week summaries in pretty mode.
+func (w *Writer) PrintTimesheetWeeksList(data []byte) error {
+	if w.Mode == ModeJSON {
+		return w.PrintJSON(data)
+	}
+	var weeks []map[string]any
+	if err := json.Unmarshal(data, &weeks); err != nil {
+		return w.PrintJSON(data)
+	}
+	tw := tabwriter.NewWriter(w.Stdout, 0, 0, 2, ' ', 0)
+	_, _ = fmt.Fprintln(tw, "WEEK_START\tENTRIES\tHOURS\tSUBMISSION\tWEEK_LOCK")
+	for _, week := range weeks {
+		submission := nestedStr(week, "submission", "status")
+		lock := nestedStr(week, "weekLock", "status")
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n",
+			strVal(week, "weekStartDate"),
+			strVal(week, "entryCount"),
+			strVal(week, "totalHours"),
+			submission,
+			lock,
+		)
+	}
+	return tw.Flush()
+}
+
+func nestedStr(m map[string]any, outer, inner string) string {
+	obj, ok := m[outer].(map[string]any)
+	if !ok {
+		return ""
+	}
+	return strVal(obj, inner)
+}
+
 // PrintError writes an error message to stderr unless quiet.
 func (w *Writer) PrintError(msg string) {
 	if w.Quiet {
