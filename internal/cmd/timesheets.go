@@ -1,0 +1,187 @@
+package cmd
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/url"
+	"strings"
+
+	"github.com/spf13/cobra"
+)
+
+var timesheetsCmd = &cobra.Command{
+	Use:   "timesheets",
+	Short: "Timesheet workflow (Advanced Workflow API)",
+}
+
+var (
+	timesheetWeekStart string
+	timesheetEmail     string
+	timesheetPersonID  string
+)
+
+var timesheetsGetCmd = &cobra.Command{
+	Use:   "get",
+	Short: "Get a person's week timesheet (GET /api/v1/timesheets/{personId})",
+	RunE:  runTimesheetGet,
+}
+
+var timesheetsSubmitCmd = &cobra.Command{
+	Use:   "submit",
+	Short: "Submit a week (POST /api/v1/timesheets/submit)",
+	RunE:  runTimesheetSubmit,
+}
+
+var timesheetsApproveCmd = &cobra.Command{
+	Use:   "approve",
+	Short: "Approve and lock a week (POST /api/v1/timesheets/{personId}/approve)",
+	RunE:  runTimesheetApprove,
+}
+
+var timesheetsRejectCmd = &cobra.Command{
+	Use:   "reject",
+	Short: "Reject a submitted week (POST /api/v1/timesheets/{personId}/reject)",
+	RunE:  runTimesheetReject,
+}
+
+var timesheetsUnlockCmd = &cobra.Command{
+	Use:   "unlock",
+	Short: "Admin unlock: reopen a person's week for editing (POST /api/v1/timesheets/{personId}/unlock)",
+	Long: `Unlock reverts the person's entries and submission to draft for the week.
+If the week is globally locked, it is reopened for everyone on that week.`,
+	RunE: runTimesheetUnlock,
+}
+
+func runTimesheetGet(cmd *cobra.Command, args []string) error {
+	personID, err := resolvePersonID(timesheetPersonID, timesheetEmail)
+	if err != nil {
+		return err
+	}
+	if timesheetWeekStart == "" {
+		return fmt.Errorf("--week-start is required (Monday ISO date, e.g. 2026-07-06)")
+	}
+	c, err := resolveClient(true)
+	if err != nil {
+		return err
+	}
+	q := url.Values{"weekStartDate": {timesheetWeekStart}}
+	resp, err := c.Get("/api/v1/timesheets/"+personID, q)
+	if err != nil {
+		handleAPIError(err)
+	}
+	return printResponse(resp.StatusCode, resp.Body)
+}
+
+func runTimesheetSubmit(cmd *cobra.Command, args []string) error {
+	personID, err := resolvePersonID(timesheetPersonID, timesheetEmail)
+	if err != nil {
+		return err
+	}
+	if timesheetWeekStart == "" {
+		return fmt.Errorf("--week-start is required")
+	}
+	body, err := json.Marshal(map[string]string{
+		"personId":      personID,
+		"weekStartDate": timesheetWeekStart,
+	})
+	if err != nil {
+		return err
+	}
+	c, err := resolveClient(true)
+	if err != nil {
+		return err
+	}
+	resp, err := c.Do("POST", "/api/v1/timesheets/submit", nil, body)
+	if err != nil {
+		handleAPIError(err)
+	}
+	return printResponse(resp.StatusCode, resp.Body)
+}
+
+func runTimesheetApprove(cmd *cobra.Command, args []string) error {
+	return timesheetPersonAction("POST", "approve")
+}
+
+func runTimesheetReject(cmd *cobra.Command, args []string) error {
+	return timesheetPersonAction("POST", "reject")
+}
+
+func runTimesheetUnlock(cmd *cobra.Command, args []string) error {
+	return timesheetPersonAction("POST", "unlock")
+}
+
+func timesheetPersonAction(method, action string) error {
+	personID, err := resolvePersonID(timesheetPersonID, timesheetEmail)
+	if err != nil {
+		return err
+	}
+	if timesheetWeekStart == "" {
+		return fmt.Errorf("--week-start is required")
+	}
+	c, err := resolveClient(true)
+	if err != nil {
+		return err
+	}
+	q := url.Values{"weekStartDate": {timesheetWeekStart}}
+	path := fmt.Sprintf("/api/v1/timesheets/%s/%s", personID, action)
+	resp, err := c.Do(method, path, q, nil)
+	if err != nil {
+		handleAPIError(err)
+	}
+	return printResponse(resp.StatusCode, resp.Body)
+}
+
+func resolvePersonID(personID, email string) (string, error) {
+	personID = strings.TrimSpace(personID)
+	email = strings.TrimSpace(email)
+	if personID != "" {
+		return personID, nil
+	}
+	if email == "" {
+		return "", fmt.Errorf("one of --person-id or --email is required")
+	}
+	c, err := resolveClient(true)
+	if err != nil {
+		return "", err
+	}
+	resp, err := c.Get("/api/v1/persons", nil)
+	if err != nil {
+		handleAPIError(err)
+	}
+	var persons []map[string]any
+	if err := json.Unmarshal(resp.Body, &persons); err != nil {
+		return "", fmt.Errorf("parse persons list: %w", err)
+	}
+	want := strings.ToLower(email)
+	for _, p := range persons {
+		em, _ := p["email"].(string)
+		if strings.ToLower(em) == want {
+			id, _ := p["id"].(string)
+			if id != "" {
+				return id, nil
+			}
+		}
+	}
+	return "", fmt.Errorf("no person found with email %q", email)
+}
+
+func init() {
+	rootCmd.AddCommand(timesheetsCmd)
+	timesheetsCmd.AddCommand(timesheetsGetCmd)
+	timesheetsCmd.AddCommand(timesheetsSubmitCmd)
+	timesheetsCmd.AddCommand(timesheetsApproveCmd)
+	timesheetsCmd.AddCommand(timesheetsRejectCmd)
+	timesheetsCmd.AddCommand(timesheetsUnlockCmd)
+
+	for _, cmd := range []*cobra.Command{
+		timesheetsGetCmd,
+		timesheetsSubmitCmd,
+		timesheetsApproveCmd,
+		timesheetsRejectCmd,
+		timesheetsUnlockCmd,
+	} {
+		cmd.Flags().StringVar(&timesheetWeekStart, "week-start", "", "Monday week start (ISO YYYY-MM-DD)")
+		cmd.Flags().StringVar(&timesheetPersonID, "person-id", "", "person UUID")
+		cmd.Flags().StringVar(&timesheetEmail, "email", "", "person email (looks up ID via GET /persons)")
+	}
+}

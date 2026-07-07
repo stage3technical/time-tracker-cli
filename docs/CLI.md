@@ -2,7 +2,7 @@
 
 Cross-platform CLI for the [BLVD Timesheet API](https://github.com/stage3technical/time-tracker-api).
 
-See also: [PLAN.md](PLAN.md) (design), [README](../README.md) (install).
+See also: [ACTIONS.md](ACTIONS.md) (commands by API group), [PLAN.md](PLAN.md) (design), [README](../README.md) (install).
 
 ## Install
 
@@ -178,6 +178,18 @@ tt persons manager set PERSON_ID --manager-id MANAGER_UUID
 
 ```bash
 tt persons subordinates list MANAGER_ID
+```
+
+### `tt timesheets`
+
+Timesheet workflow — see **[ACTIONS.md](ACTIONS.md)** § Advanced Workflow for full table.
+
+```bash
+tt timesheets get --email pam@blvdinteractive.com --week-start 2026-07-06
+tt timesheets unlock --profile prod --email pam@blvdinteractive.com --week-start 2026-07-06
+tt timesheets submit --person-id UUID --week-start 2026-07-06
+tt timesheets approve --person-id UUID --week-start 2026-07-06
+tt timesheets reject --email user@blvdinteractive.com --week-start 2026-07-06
 ```
 
 ## Exit codes
