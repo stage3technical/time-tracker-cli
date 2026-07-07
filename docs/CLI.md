@@ -182,17 +182,59 @@ tt persons subordinates list MANAGER_ID
 
 ### `tt timesheets`
 
-Timesheet workflow — see **[ACTIONS.md](ACTIONS.md)** § Advanced Workflow for full table.
+Timesheet workflow — see **[ACTIONS.md](ACTIONS.md)** § Advanced Workflow.
+
+`--week-start` defaults to **this Monday** (local timezone) when omitted.
 
 ```bash
-tt timesheets get --email pam@blvdinteractive.com --week-start 2026-07-06
-tt timesheets unlock --profile prod --email pam@blvdinteractive.com --week-start 2026-07-06
+tt timesheets get --email pam@blvdinteractive.com
+tt timesheets unlock --profile prod --email pam@blvdinteractive.com
 tt timesheets submit --person-id UUID --week-start 2026-07-06
-tt timesheets approve --person-id UUID --week-start 2026-07-06
-tt timesheets reject --email user@blvdinteractive.com --week-start 2026-07-06
+tt timesheets approve --person-id UUID
+tt timesheets reject --email user@blvdinteractive.com
 ```
 
-## Exit codes
+### `tt entries`
+
+Time reporting entries — see **[ACTIONS.md](ACTIONS.md)** § Time Reporting.
+
+```bash
+tt entries list --email user@blvdinteractive.com
+tt entries list --email user@blvdinteractive.com --work-date 2026-07-07
+tt entries get ENTRY_ID
+tt entries create --email user@blvdinteractive.com \
+  --project-name OOO --work-date 2026-07-07 --role PM --hours 8
+tt entries update ENTRY_ID --hours 4
+tt entries delete ENTRY_ID --confirm
+```
+
+Pretty mode columns for `list`: `ID`, `WORK_DATE`, `PROJECT`, `ROLE`, `HOURS`, `STATUS`.
+
+### `tt projects`
+
+Project CRUD — see **[ACTIONS.md](ACTIONS.md)** § Projects.
+
+Projects use `canonicalName` as the display name. `--code` is an exact match on `canonicalName` (there is no separate code field).
+
+```bash
+tt projects list
+tt projects list --status active
+tt projects get PROJECT_ID
+tt projects get --name "OOO/Holiday"
+tt projects get --code OOO
+tt projects create --name OOO --bill-type N-BIL-I --allowed-roles "PM,AEM Architect"
+tt projects update PROJECT_ID --name "OOO (updated)"
+tt projects archive PROJECT_ID --confirm
+tt projects archive --name "OOO/Holiday" --confirm
+```
+
+Pretty mode columns for `list`: `ID`, `NAME`, `BILL_TYPE`, `STATUS`.
+
+Destructive commands (`archive`, `entries delete`) require `--confirm`.
+
+### `tt api`
+
+Generic HTTP call for endpoints not yet wrapped (escape hatch).
 
 | Code | Meaning |
 |------|---------|

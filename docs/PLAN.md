@@ -107,14 +107,16 @@ Mirror API route groups from [time-tracker-api routes](https://github.com/stage3
 | Group | Commands | API prefix |
 |-------|----------|------------|
 | `persons` | create, deactivate, manager remove, subordinates add/remove | `/api/v1/persons` |
-| `projects` | list/get/create/update/delete, roles, manager, account-manager, approvers | `/api/v1/projects` |
+| `projects` | roles, manager, account-manager, approvers | `/api/v1/projects` |
 | `accounts` | CRUD | `/api/v1/accounts` |
 | `company-roles` | CRUD | `/api/v1/company-roles` |
 | `entries` | list/get/create/update/delete + filters | `/api/v1/time-reporting/entries` |
-| `timesheets` | week, submit, approve, reject, bulk-approve | `/api/v1/timesheets` |
+| `timesheets` | week, submit, approve, reject, unlock, bulk-approve | `/api/v1/timesheets` |
 | `documentation` | explanation CRUD | `/api/v1/documentation/explanation` |
 | `relationships` | two-way / one-way CRUD | `/api/v1/employee-relationships` |
 | `items` | create (scaffold) | `/items` |
+
+**Shipped in Phase 2a:** `tt timesheets`, `tt entries`, `tt projects` (list/get/create/update/archive).
 
 ### Generic escape hatch (Phase 1)
 
@@ -178,7 +180,8 @@ time-tracker-cli/
 | Phase | Status |
 |-------|--------|
 | Phase 1 (configure, health, me, api, persons) | **Shipped** |
-| Phase 2 (projects, entries, timesheets, …) | Planned |
+| Phase 2a (timesheets, entries, projects core CRUD) | **Shipped** |
+| Phase 2b (persons create/deactivate, project roles, bulk-approve, accounts, …) | Planned |
 
 ## Risk note
 

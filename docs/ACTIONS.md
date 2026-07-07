@@ -4,6 +4,12 @@ Commands call the **BLVD Timesheet HTTP API** only — no direct DynamoDB. Group
 
 Legend: **implemented** = first-class `tt` subcommand · **api** = use `tt api` until wrapped · **—** = not in API yet
 
+**Conventions**
+
+- `--week-start` defaults to **this Monday** (local timezone) on `tt timesheets` and `tt entries list`.
+- Destructive commands require **`--confirm`**: `tt entries delete`, `tt projects archive`.
+- Projects have no separate `code` field; `--code` matches `canonicalName` exactly (case-insensitive).
+
 ---
 
 ## Setup (not an API tag)
@@ -14,7 +20,6 @@ Legend: **implemented** = first-class `tt` subcommand · **api** = use `tt api` 
 | List profiles | `tt configure list` | — |
 | Health check | `tt health` | `GET /health` |
 | Current user | `tt me` | `GET /me` |
-| Generic HTTP | `tt api METHOD PATH` | any |
 
 ---
 
@@ -46,7 +51,11 @@ Legend: **implemented** = first-class `tt` subcommand · **api** = use `tt api` 
 
 | Action | Status | Command |
 |--------|--------|---------|
-| List / get / create / update / delete | api | `tt api GET /api/v1/projects` etc. |
+| List projects | **implemented** | `tt projects list [--status active]` |
+| Get project | **implemented** | `tt projects get ID` or `tt projects get --name "OOO"` / `--code OOO` |
+| Create project | **implemented** | `tt projects create --name OOO --bill-type N-BIL-I [--allowed-roles ...]` |
+| Update project | **implemented** | `tt projects update ID --name ...` |
+| Archive project | **implemented** | `tt projects archive ID --confirm` or `--name` / `--code` |
 | Project roles, managers, approvers | api | `tt api ...` under `/api/v1/projects/{id}/...` |
 
 ---
@@ -67,14 +76,15 @@ Legend: **implemented** = first-class `tt` subcommand · **api** = use `tt api` 
 
 ---
 
-## Time Reporting
+## Time Reporting (`tt entries`)
 
 | Action | Status | Command |
 |--------|--------|---------|
-| List entries | api | `tt api GET "/api/v1/time-reporting/entries?personId=UUID&weekStartDate=2026-07-06"` |
-| Create entry | api | `tt api POST /api/v1/time-reporting/entries --body '{...}'` |
-| Update entry | api | `tt api PUT /api/v1/time-reporting/entries/ENTRY_ID --body '{...}'` |
-| Delete entry | api | `tt api DELETE /api/v1/time-reporting/entries/ENTRY_ID` |
+| List entries | **implemented** | `tt entries list --email user@...` (defaults to this week) |
+| Get entry | **implemented** | `tt entries get ENTRY_ID` |
+| Create entry | **implemented** | `tt entries create --email ... --project-name OOO --work-date 2026-07-07 --role PM --hours 8` |
+| Update entry | **implemented** | `tt entries update ENTRY_ID --hours 4` |
+| Delete entry | **implemented** | `tt entries delete ENTRY_ID --confirm` |
 
 ---
 
@@ -88,15 +98,15 @@ Legend: **implemented** = first-class `tt` subcommand · **api** = use `tt api` 
 
 ## Advanced Workflow (timesheets)
 
-Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` on every command.
+Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` on every command. Omit `--week-start` to use **this Monday**.
 
 | Action | Status | Command |
 |--------|--------|---------|
-| Get week | **implemented** | `tt timesheets get --email user@blvdinteractive.com --week-start 2026-07-06` |
-| Submit week | **implemented** | `tt timesheets submit --email ... --week-start 2026-07-06` |
-| Approve (lock) week | **implemented** | `tt timesheets approve --person-id UUID --week-start 2026-07-06` |
-| Reject submission | **implemented** | `tt timesheets reject --email ... --week-start 2026-07-06` |
-| **Unlock (admin)** | **implemented** | `tt timesheets unlock --email ... --week-start 2026-07-06` |
+| Get week | **implemented** | `tt timesheets get --email user@blvdinteractive.com` |
+| Submit week | **implemented** | `tt timesheets submit --email ...` |
+| Approve (lock) week | **implemented** | `tt timesheets approve --person-id UUID` |
+| Reject submission | **implemented** | `tt timesheets reject --email ...` |
+| **Unlock (admin)** | **implemented** | `tt timesheets unlock --email ...` |
 | Bulk approve | api | `tt api POST /api/v1/timesheets/bulk-approve --body '{...}'` |
 
 ### Admin unlock notes
@@ -115,33 +125,39 @@ Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` o
 
 ---
 
-## Prod example: unlock Pam's timesheet this week
-
-Today is **2026-07-07** (Tuesday) → week starts **2026-07-06** (Monday).
+## Example: OOO/Holiday project split
 
 ```powershell
-# One-time prod profile (JWT from prod login — localStorage authToken)
+tt projects list --status active
+tt projects create --name OOO --bill-type N-BIL-I --allowed-roles "PM,AEM Architect"
+tt projects create --name Holiday --bill-type N-BIL-I --allowed-roles "PM,AEM Architect"
+tt projects archive --name "OOO/Holiday" --confirm
+
+tt entries list --email user@blvdinteractive.com
+tt entries update ENTRY_ID --project-id <new-ooo-id>
+```
+
+---
+
+## Example: unlock Pam's timesheet this week
+
+```powershell
 tt configure set --profile prod `
   --base-url https://timeapi.blvdinteractive.com `
   --token "<JWT>"
 
-# Inspect current state
-tt timesheets get --profile prod --email pam@blvdinteractive.com --week-start 2026-07-06
-
-# Unlock
-tt timesheets unlock --profile prod --email pam@blvdinteractive.com --week-start 2026-07-06
+tt timesheets get --profile prod --email pam@blvdinteractive.com
+tt timesheets unlock --profile prod --email pam@blvdinteractive.com
 ```
 
-If unlock is not deployed yet, **submitted-only** (week not locked) can use reject today:
+---
+
+## Escape hatch
+
+For endpoints not yet wrapped:
 
 ```powershell
-tt timesheets reject --profile prod --email pam@blvdinteractive.com --week-start 2026-07-06
-```
-
-Or via generic API (same as above once `tt timesheets` is built):
-
-```powershell
-tt api POST "/api/v1/timesheets/PERSON_UUID/unlock?weekStartDate=2026-07-06" --profile prod
+tt api METHOD PATH [--query key=value] [--body @file.json]
 ```
 
 ---

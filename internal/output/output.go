@@ -90,6 +90,56 @@ func (w *Writer) PrintPersonsList(data []byte) error {
 	return tw.Flush()
 }
 
+// PrintProjectsList renders a projects list in pretty mode.
+func (w *Writer) PrintProjectsList(data []byte) error {
+	if w.Mode == ModeJSON {
+		return w.PrintJSON(data)
+	}
+	var projects []map[string]any
+	if err := json.Unmarshal(data, &projects); err != nil {
+		return w.PrintJSON(data)
+	}
+	tw := tabwriter.NewWriter(w.Stdout, 0, 0, 2, ' ', 0)
+	_, _ = fmt.Fprintln(tw, "ID\tNAME\tBILL_TYPE\tSTATUS")
+	for _, p := range projects {
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n",
+			strVal(p, "id"),
+			strVal(p, "canonicalName"),
+			strVal(p, "billType"),
+			strVal(p, "status"),
+		)
+	}
+	return tw.Flush()
+}
+
+// PrintEntriesList renders time entries in pretty mode.
+func (w *Writer) PrintEntriesList(data []byte) error {
+	if w.Mode == ModeJSON {
+		return w.PrintJSON(data)
+	}
+	var entries []map[string]any
+	if err := json.Unmarshal(data, &entries); err != nil {
+		return w.PrintJSON(data)
+	}
+	tw := tabwriter.NewWriter(w.Stdout, 0, 0, 2, ' ', 0)
+	_, _ = fmt.Fprintln(tw, "ID\tWORK_DATE\tPROJECT\tROLE\tHOURS\tSTATUS")
+	for _, e := range entries {
+		project := strVal(e, "projectCanonicalName")
+		if project == "" {
+			project = strVal(e, "projectId")
+		}
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n",
+			strVal(e, "id"),
+			strVal(e, "workDate"),
+			project,
+			strVal(e, "role"),
+			strVal(e, "hours"),
+			strVal(e, "status"),
+		)
+	}
+	return tw.Flush()
+}
+
 // PrintError writes an error message to stderr unless quiet.
 func (w *Writer) PrintError(msg string) {
 	if w.Quiet {
