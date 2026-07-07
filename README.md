@@ -5,8 +5,11 @@ Cross-platform command-line client for the [BLVD Timesheet API](https://github.c
 ## Quick start
 
 ```powershell
-# Build (Windows)
-go build -o tt.exe ./cmd/tt
+# Build (Windows) — embeds git tag/commit
+.\scripts\build.ps1
+
+# Or plain build (shows version "dev")
+# go build -o tt.exe ./cmd/tt
 
 # Configure dev profile (paste JWT from browser)
 .\tt.exe configure set --profile dev `
