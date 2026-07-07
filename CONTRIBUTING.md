@@ -4,12 +4,14 @@
 
 This CLI wraps the **BLVD Timesheet HTTP API only** — no direct DynamoDB access. See `.cursor/rules/cli-via-api.mdc`.
 
-## Git and PR workflow
+## Pull requests
 
-Follow [time-tracker-api/docs/PROJECT_APPROACH.md](https://github.com/stage3technical/time-tracker-api/blob/main/docs/PROJECT_APPROACH.md) § Git and PR workflow and § Releases (semver).
+- Use a feature branch (`feature/…`, `fix/…`, or `docs/…`) — not `chore/`
+- Open PRs as **ready for review** (not draft) — `gh pr create --base main` without `--draft` (this repo has no `develop` branch)
+- **User merges** — do not run `gh pr merge` unless explicitly asked
+- When merging, default to **Create a merge commit** unless squash/rebase is requested
 
-- Branch from `develop` (or `main` if this repo has no `develop` yet).
-- User merges PRs; agents do not run `gh pr merge` unless asked.
+Canonical rules: [time-tracker-api/docs/PROJECT_APPROACH.md](https://github.com/stage3technical/time-tracker-api/blob/main/docs/PROJECT_APPROACH.md) § Git and PR workflow and § Releases (semver).
 
 ## Shell
 
@@ -21,3 +23,9 @@ Windows agents use PowerShell — see api `PROJECT_APPROACH.md` § Shell environ
 go test ./...
 go build -o tt.exe ./cmd/tt
 ```
+
+See [docs/CLI.md](docs/CLI.md) for command reference.
+
+## Agent rules
+
+See `.cursor/rules/` for git/PR workflow and CLI-via-API constraints.
