@@ -12,12 +12,16 @@ go install github.com/stage3technical/time-tracker-cli/cmd/tt@latest
 
 Or build from source (embeds git tag/commit):
 
+```cmd
+scripts\build.cmd           # Windows Command Prompt
+```
+
 ```bash
 ./scripts/build.sh          # Linux / macOS / WSL
 ```
 
 ```powershell
-.\scripts\build.ps1         # Windows
+.\scripts\build.ps1         # Windows PowerShell
 ```
 
 Plain `go build -o tt.exe ./cmd/tt` shows `dev (commit none, built unknown)`.

@@ -4,8 +4,13 @@ Cross-platform command-line client for the [BLVD Timesheet API](https://github.c
 
 ## Quick start
 
+```cmd
+REM Build from Command Prompt — embeds git tag/commit
+scripts\build.cmd
+```
+
 ```powershell
-# Build (Windows) — embeds git tag/commit
+# Build from PowerShell — embeds git tag/commit
 .\scripts\build.ps1
 
 # Or plain build (shows version "dev")
@@ -24,7 +29,8 @@ Cross-platform command-line client for the [BLVD Timesheet API](https://github.c
 
 ```bash
 # Linux / macOS / WSL
-go build -o tt ./cmd/tt
+./scripts/build.sh
+# Or: go build -o tt ./cmd/tt
 tt configure set --profile dev \
   --base-url https://8igr6pspqh.execute-api.us-east-1.amazonaws.com \
   --token "$JWT"
