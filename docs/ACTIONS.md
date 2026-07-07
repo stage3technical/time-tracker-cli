@@ -102,18 +102,43 @@ Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` o
 
 | Action | Status | Command |
 |--------|--------|---------|
+| List weeks | **implemented** | `tt timesheets list --email user@blvdinteractive.com` |
 | Get week | **implemented** | `tt timesheets get --email user@blvdinteractive.com` |
 | Submit week | **implemented** | `tt timesheets submit --email ...` |
 | Approve (lock) week | **implemented** | `tt timesheets approve --person-id UUID` |
 | Reject submission | **implemented** | `tt timesheets reject --email ...` |
 | **Unlock (admin)** | **implemented** | `tt timesheets unlock --email ...` |
+| **Purge (admin)** | **implemented** | `tt timesheets purge --email ... --week-start 2026-06-30 --confirm` |
 | Bulk approve | api | `tt api POST /api/v1/timesheets/bulk-approve --body '{...}'` |
+
+`list` supports `--before` / `--after` (Monday `YYYY-MM-DD`). `purge` supports `--week-start` (one week) or `--before` (all prior weeks, exclusive). Purge requires `--confirm`.
 
 ### Admin unlock notes
 
 - Reverts the **target person's** entries and submission to `draft`.
 - If the **week is globally locked**, unlock **opens the week for everyone** (week locks are not per-person).
 - Requires API with `POST /api/v1/timesheets/{personId}/unlock` deployed.
+
+### Admin purge notes
+
+- Deletes **all entries** and **WeekSubmission** for the person/week.
+- Does **not** change global `WeekLock` (other people on that week are unaffected).
+- Works on locked/submitted weeks without `unlock`.
+
+---
+
+## Example: clear Marlene's history before this week
+
+```powershell
+# See what exists
+tt timesheets list --profile prod --email marlene.bockler@blvdinteractive.com --before 2026-07-06
+
+# One week at a time
+tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --week-start 2026-06-30 --confirm
+
+# Or all weeks before this Monday (exclusive)
+tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --before 2026-07-06 --confirm
+```
 
 ---
 
