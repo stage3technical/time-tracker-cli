@@ -1,4 +1,8 @@
-# Contributing to time-tracker-cli
+# Contributing — time-tracker-cli
+
+## Scope
+
+This CLI wraps the **BLVD Timesheet HTTP API only** — no direct DynamoDB access. See `.cursor/rules/cli-via-api.mdc`.
 
 ## Pull requests
 
@@ -7,11 +11,17 @@
 - **User merges** — do not run `gh pr merge` unless explicitly asked
 - When merging, default to **Create a merge commit** unless squash/rebase is requested
 
-## Development
+Canonical rules: [time-tracker-api/docs/PROJECT_APPROACH.md](https://github.com/stage3technical/time-tracker-api/blob/main/docs/PROJECT_APPROACH.md) § Git and PR workflow and § Releases (semver).
 
-```bash
+## Shell
+
+Windows agents use PowerShell — see api `PROJECT_APPROACH.md` § Shell environment.
+
+## Build and test
+
+```powershell
 go test ./...
-go build ./cmd/tt
+go build -o tt.exe ./cmd/tt
 ```
 
 See [docs/CLI.md](docs/CLI.md) for command reference.

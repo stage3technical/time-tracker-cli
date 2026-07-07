@@ -6,7 +6,7 @@ alwaysApply: true
 
 # CLI via API only
 
-All `tt` functionality must call the Time Tracker HTTP API. The CLI is a thin client — it does not own business rules or persistence.
+All `tt` functionality must call the BLVD Timesheet HTTP API. The CLI is a thin client — it does not own business rules or persistence.
 
 ## Do
 
