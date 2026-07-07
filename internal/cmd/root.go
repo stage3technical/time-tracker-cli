@@ -8,6 +8,7 @@ import (
 	"github.com/stage3technical/time-tracker-cli/internal/client"
 	"github.com/stage3technical/time-tracker-cli/internal/config"
 	"github.com/stage3technical/time-tracker-cli/internal/output"
+	"github.com/stage3technical/time-tracker-cli/internal/version"
 	"gopkg.in/ini.v1"
 )
 
@@ -31,7 +32,16 @@ var rootCmd = &cobra.Command{
 	Use:   "tt",
 	Short: "Time Tracker API CLI",
 	Long:  "tt is a command-line client for the Time Tracker API.",
+	Version: version.Version,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if !commandNeedsConfig(cmd) {
+			mode, err := output.ParseOutputFlag(flagOutput)
+			if err != nil {
+				return err
+			}
+			out = output.NewWriter(mode, flagQuiet)
+			return nil
+		}
 		mode, err := output.ParseOutputFlag(flagOutput)
 		if err != nil {
 			return err
@@ -48,7 +58,17 @@ var rootCmd = &cobra.Command{
 	SilenceUsage: true,
 }
 
+func commandNeedsConfig(cmd *cobra.Command) bool {
+	for c := cmd; c != nil; c = c.Parent() {
+		if c.Name() == "version" {
+			return false
+		}
+	}
+	return true
+}
+
 func init() {
+	rootCmd.SetVersionTemplate("{{.Version}}\n")
 	rootCmd.PersistentFlags().StringVar(&flagProfile, "profile", "", "config profile name")
 	rootCmd.PersistentFlags().StringVar(&flagBaseURL, "base-url", "", "API base URL override")
 	rootCmd.PersistentFlags().StringVar(&flagToken, "token", "", "JWT bearer token override")
