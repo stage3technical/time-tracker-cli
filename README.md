@@ -28,13 +28,16 @@ tt configure set --profile dev \
 tt health && tt me
 ```
 
-## Features (Phase 1)
+## Features
 
 - AWS-style profile config at `~/.tt/config`
 - `tt configure`, `tt configure list`, `tt configure set`
 - `tt health`, `tt me`
 - `tt persons` — list, get, update, import, manager get/set, subordinates list
-- `tt api` — generic METHOD + path escape hatch (**use for projects until Phase 2** — `tt projects` not implemented yet)
+- `tt timesheets` — get, submit, approve, reject, unlock (`--week-start` defaults to this Monday)
+- `tt entries` — list, get, create, update, delete (destructive requires `--confirm`)
+- `tt projects` — list, get, create, update, archive (lookup by `--name` / `--code`)
+- `tt api` — generic escape hatch for endpoints not yet wrapped
 - `--output json|pretty`, env overrides (`TT_API_*`)
 
 ## Documentation

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -57,14 +56,12 @@ func runTimesheetGet(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if timesheetWeekStart == "" {
-		return fmt.Errorf("--week-start is required (Monday ISO date, e.g. 2026-07-06)")
-	}
+	weekStart := weekStartOrDefault(timesheetWeekStart)
 	c, err := resolveClient(true)
 	if err != nil {
 		return err
 	}
-	q := url.Values{"weekStartDate": {timesheetWeekStart}}
+	q := url.Values{"weekStartDate": {weekStart}}
 	resp, err := c.Get("/api/v1/timesheets/"+personID, q)
 	if err != nil {
 		handleAPIError(err)
@@ -77,12 +74,10 @@ func runTimesheetSubmit(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if timesheetWeekStart == "" {
-		return fmt.Errorf("--week-start is required")
-	}
+	weekStart := weekStartOrDefault(timesheetWeekStart)
 	body, err := json.Marshal(map[string]string{
 		"personId":      personID,
-		"weekStartDate": timesheetWeekStart,
+		"weekStartDate": weekStart,
 	})
 	if err != nil {
 		return err
@@ -115,54 +110,18 @@ func timesheetPersonAction(method, action string) error {
 	if err != nil {
 		return err
 	}
-	if timesheetWeekStart == "" {
-		return fmt.Errorf("--week-start is required")
-	}
+	weekStart := weekStartOrDefault(timesheetWeekStart)
 	c, err := resolveClient(true)
 	if err != nil {
 		return err
 	}
-	q := url.Values{"weekStartDate": {timesheetWeekStart}}
+	q := url.Values{"weekStartDate": {weekStart}}
 	path := fmt.Sprintf("/api/v1/timesheets/%s/%s", personID, action)
 	resp, err := c.Do(method, path, q, nil)
 	if err != nil {
 		handleAPIError(err)
 	}
 	return printResponse(resp.StatusCode, resp.Body)
-}
-
-func resolvePersonID(personID, email string) (string, error) {
-	personID = strings.TrimSpace(personID)
-	email = strings.TrimSpace(email)
-	if personID != "" {
-		return personID, nil
-	}
-	if email == "" {
-		return "", fmt.Errorf("one of --person-id or --email is required")
-	}
-	c, err := resolveClient(true)
-	if err != nil {
-		return "", err
-	}
-	resp, err := c.Get("/api/v1/persons", nil)
-	if err != nil {
-		handleAPIError(err)
-	}
-	var persons []map[string]any
-	if err := json.Unmarshal(resp.Body, &persons); err != nil {
-		return "", fmt.Errorf("parse persons list: %w", err)
-	}
-	want := strings.ToLower(email)
-	for _, p := range persons {
-		em, _ := p["email"].(string)
-		if strings.ToLower(em) == want {
-			id, _ := p["id"].(string)
-			if id != "" {
-				return id, nil
-			}
-		}
-	}
-	return "", fmt.Errorf("no person found with email %q", email)
 }
 
 func init() {
@@ -180,7 +139,7 @@ func init() {
 		timesheetsRejectCmd,
 		timesheetsUnlockCmd,
 	} {
-		cmd.Flags().StringVar(&timesheetWeekStart, "week-start", "", "Monday week start (ISO YYYY-MM-DD)")
+		cmd.Flags().StringVar(&timesheetWeekStart, "week-start", "", "Monday week start (default: this Monday)")
 		cmd.Flags().StringVar(&timesheetPersonID, "person-id", "", "person UUID")
 		cmd.Flags().StringVar(&timesheetEmail, "email", "", "person email (looks up ID via GET /persons)")
 	}
