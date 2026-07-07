@@ -27,4 +27,11 @@ jobs:
         run: go test ./...
 
       - name: Build
-        run: go build -o tt${{ matrix.os == 'windows-latest' && '.exe' || '' }} ./cmd/tt
+        env:
+          VERSION: dev
+          COMMIT: ${{ github.sha }}
+          DATE: ${{ github.event.pull_request.updated_at || github.event.head_commit.timestamp }}
+        run: |
+          ldflags="-X github.com/stage3technical/time-tracker-cli/internal/version.Version=${VERSION} -X github.com/stage3technical/time-tracker-cli/internal/version.Commit=${COMMIT} -X github.com/stage3technical/time-tracker-cli/internal/version.Date=${DATE}"
+          go build -ldflags "$ldflags" -o tt${{ matrix.os == 'windows-latest' && '.exe' || '' }} ./cmd/tt
+          ./tt${{ matrix.os == 'windows-latest' && '.exe' || '' }} version

@@ -38,6 +38,7 @@ tt health && tt me
 - `tt entries` — list, get, create, update, delete (destructive requires `--confirm`)
 - `tt projects` — list, get, create, update, archive (lookup by `--name` / `--code`)
 - `tt company-roles` — list, get, create, update, delete
+- `tt version` — print semver / build info
 - `tt api` — generic escape hatch for endpoints not yet wrapped
 - `--output json|pretty`, env overrides (`TT_API_*`)
 

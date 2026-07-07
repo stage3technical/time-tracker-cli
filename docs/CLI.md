@@ -10,14 +10,16 @@ See also: [ACTIONS.md](ACTIONS.md) (commands by API group), [PLAN.md](PLAN.md) (
 go install github.com/stage3technical/time-tracker-cli/cmd/tt@latest
 ```
 
-Or build from source:
+Or build from source (embeds `dev` version unless you pass `-ldflags`):
 
 ```bash
 git clone https://github.com/stage3technical/time-tracker-cli.git
 cd time-tracker-cli
-go build -o tt ./cmd/tt        # Linux/macOS
 go build -o tt.exe ./cmd/tt    # Windows
+tt version
 ```
+
+**Version:** `tt version` or `tt --version`. Merges to `main` auto-tag **semver** releases (`v0.1.0`, …) via GitHub Actions — bump rules: `feat:` → minor, breaking/`!` → major, else patch.
 
 ## Configuration
 
@@ -70,6 +72,17 @@ JWTs expire. When you see `401`, paste a fresh token from your browser session (
 | `--quiet` | Suppress non-essential stderr |
 
 ## Commands
+
+### `tt version`
+
+Print build version (no config required).
+
+```bash
+tt version
+tt --version
+```
+
+`tt version` includes commit and build date when compiled with release `-ldflags`.
 
 ### `tt health`
 
