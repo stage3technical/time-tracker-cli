@@ -39,7 +39,8 @@ tt health && tt me
 
 ## Documentation
 
-- [docs/CLI.md](docs/CLI.md) — full command reference
+- [docs/CLI.md](docs/CLI.md) — install and config
+- [docs/ACTIONS.md](docs/ACTIONS.md) — **commands by API action group**
 - [docs/PLAN.md](docs/PLAN.md) — design and roadmap
 - [CONTRIBUTING.md](CONTRIBUTING.md) — PR workflow
 
