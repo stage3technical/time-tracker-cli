@@ -238,6 +238,21 @@ Pretty mode columns for `list`: `ID`, `NAME`, `BILL_TYPE`, `STATUS`.
 
 Destructive commands (`archive`, `entries delete`) require `--confirm`.
 
+### `tt company-roles`
+
+Company role registry — see **[ACTIONS.md](ACTIONS.md)** § Company Roles.
+
+```bash
+tt company-roles list
+tt company-roles list --profile prod
+tt company-roles get ROLE_ID
+tt company-roles create --name "AEM Architect" --description "..."
+tt company-roles update ROLE_ID --name "AEM Architect"
+tt company-roles delete ROLE_ID --confirm
+```
+
+Pretty mode columns for `list`: `ID`, `NAME`, `DESCRIPTION`.
+
 ### `tt api`
 
 Generic HTTP call for endpoints not yet wrapped (escape hatch).
