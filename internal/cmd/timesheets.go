@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/stage3technical/time-tracker-cli/internal/client"
 	"github.com/stage3technical/time-tracker-cli/internal/output"
 )
 
@@ -202,8 +203,12 @@ func runTimesheetLockPrior(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	c.ExtraHeaders = map[string]string{"X-Scheduler-Secret": secret}
-	resp, err := c.Do("POST", "/api/v1/timesheets/weeks/lock-prior", nil, nil)
+	api, ok := c.(*client.Client)
+	if !ok {
+		return fmt.Errorf("lock-prior requires full write client")
+	}
+	api.ExtraHeaders = map[string]string{"X-Scheduler-Secret": secret}
+	resp, err := api.Do("POST", "/api/v1/timesheets/weeks/lock-prior", nil, nil)
 	if err != nil {
 		handleAPIError(err)
 	}
@@ -230,15 +235,15 @@ func timesheetPersonAction(method, action string) error {
 }
 
 func init() {
-	rootCmd.AddCommand(timesheetsCmd)
-	timesheetsCmd.AddCommand(timesheetsListCmd)
-	timesheetsCmd.AddCommand(timesheetsGetCmd)
-	timesheetsCmd.AddCommand(timesheetsSubmitCmd)
-	timesheetsCmd.AddCommand(timesheetsApproveCmd)
-	timesheetsCmd.AddCommand(timesheetsRejectCmd)
-	timesheetsCmd.AddCommand(timesheetsUnlockCmd)
-	timesheetsCmd.AddCommand(timesheetsLockPriorCmd)
-	timesheetsCmd.AddCommand(timesheetsPurgeCmd)
+	register(rootCmd, timesheetsCmd, CapRead)
+	register(timesheetsCmd, timesheetsListCmd, CapRead)
+	register(timesheetsCmd, timesheetsGetCmd, CapRead)
+	register(timesheetsCmd, timesheetsSubmitCmd, CapWrite)
+	register(timesheetsCmd, timesheetsApproveCmd, CapWrite)
+	register(timesheetsCmd, timesheetsRejectCmd, CapWrite)
+	register(timesheetsCmd, timesheetsUnlockCmd, CapWrite)
+	register(timesheetsCmd, timesheetsLockPriorCmd, CapWrite)
+	register(timesheetsCmd, timesheetsPurgeCmd, CapWrite)
 
 	for _, cmd := range []*cobra.Command{
 		timesheetsListCmd,

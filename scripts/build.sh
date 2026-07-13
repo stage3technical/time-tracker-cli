@@ -13,9 +13,13 @@ ldflags+=" -X github.com/stage3technical/time-tracker-cli/internal/version.Commi
 ldflags+=" -X github.com/stage3technical/time-tracker-cli/internal/version.Date=${date}"
 
 out=tt
+ro_out=tt-ro
 if [[ "${1:-}" == "--windows" ]] || [[ "$(go env GOOS)" == "windows" ]]; then
   out=tt.exe
+  ro_out=tt-ro.exe
 fi
 
 go build -ldflags "$ldflags" -o "$out" ./cmd/tt
+go build -ldflags "$ldflags" -o "$ro_out" ./cmd/tt-ro
 "./$out" version
+"./$ro_out" version

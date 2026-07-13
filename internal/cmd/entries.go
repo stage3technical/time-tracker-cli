@@ -204,12 +204,12 @@ func runEntriesDelete(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	rootCmd.AddCommand(entriesCmd)
-	entriesCmd.AddCommand(entriesListCmd)
-	entriesCmd.AddCommand(entriesGetCmd)
-	entriesCmd.AddCommand(entriesCreateCmd)
-	entriesCmd.AddCommand(entriesUpdateCmd)
-	entriesCmd.AddCommand(entriesDeleteCmd)
+	register(rootCmd, entriesCmd, CapRead)
+	register(entriesCmd, entriesListCmd, CapRead)
+	register(entriesCmd, entriesGetCmd, CapRead)
+	register(entriesCmd, entriesCreateCmd, CapWrite)
+	register(entriesCmd, entriesUpdateCmd, CapWrite)
+	register(entriesCmd, entriesDeleteCmd, CapWrite)
 
 	for _, cmd := range []*cobra.Command{entriesListCmd, entriesCreateCmd} {
 		cmd.Flags().StringVar(&entryPersonID, "person-id", "", "person UUID")

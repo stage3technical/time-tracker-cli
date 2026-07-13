@@ -49,7 +49,21 @@ tt health && tt me
 - `tt company-roles` — list, get, create, update, delete
 - `tt version` — print semver / build info
 - `tt api` — generic escape hatch for endpoints not yet wrapped
+- **`tt-ro`** — read-only binary (list/get only; no writes, no `api` command)
 - `--output json|pretty`, env overrides (`TT_API_*`)
+
+## Read-only CLI (`tt-ro`)
+
+Build scripts produce both `tt` and `tt-ro`. Use `tt-ro` for reporting and ops users who should not mutate data:
+
+```bash
+./scripts/build.sh    # builds tt and tt-ro
+tt-ro configure list
+tt-ro persons list --profile prod
+tt-ro timesheets list --profile prod --email user@example.com
+```
+
+`tt-ro` shares the same `~/.tt/config` profiles as `tt`. It omits all write commands and blocks non-GET HTTP at the client layer. Full `tt` or `curl` can still mutate the API — see [docs/CLI.md](docs/CLI.md#read-only-cli-tt-ro).
 
 ## Documentation
 

@@ -127,8 +127,8 @@ var configureSetCmd = &cobra.Command{
 }
 
 func init() {
-	configureCmd.AddCommand(configureListCmd)
-	configureCmd.AddCommand(configureSetCmd)
+	register(configureCmd, configureListCmd, CapLocal)
+	register(configureCmd, configureSetCmd, CapLocal)
 
 	configureSetCmd.Flags().StringVar(&setProfileName, "profile", "", "profile name")
 	configureSetCmd.Flags().StringVar(&setBaseURL, "base-url", "", "API base URL")

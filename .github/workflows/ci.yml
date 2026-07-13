@@ -37,4 +37,6 @@ jobs:
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then ext=".exe"; fi
           ldflags="-X github.com/stage3technical/time-tracker-cli/internal/version.Version=${VERSION} -X github.com/stage3technical/time-tracker-cli/internal/version.Commit=${COMMIT} -X github.com/stage3technical/time-tracker-cli/internal/version.Date=${DATE}"
           go build -ldflags "$ldflags" -o "tt${ext}" ./cmd/tt
+          go build -ldflags "$ldflags" -o "tt-ro${ext}" ./cmd/tt-ro
           "./tt${ext}" version
+          "./tt-ro${ext}" version

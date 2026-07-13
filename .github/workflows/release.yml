@@ -56,8 +56,11 @@ jobs:
           mkdir -p dist
           ldflags="-s -w -X github.com/stage3technical/time-tracker-cli/internal/version.Version=${VERSION} -X github.com/stage3technical/time-tracker-cli/internal/version.Commit=${COMMIT} -X github.com/stage3technical/time-tracker-cli/internal/version.Date=${DATE}"
           GOOS=linux GOARCH=amd64 go build -ldflags "$ldflags" -o dist/tt-linux-amd64 ./cmd/tt
+          GOOS=linux GOARCH=amd64 go build -ldflags "$ldflags" -o dist/tt-ro-linux-amd64 ./cmd/tt-ro
           GOOS=windows GOARCH=amd64 go build -ldflags "$ldflags" -o dist/tt-windows-amd64.exe ./cmd/tt
+          GOOS=windows GOARCH=amd64 go build -ldflags "$ldflags" -o dist/tt-ro-windows-amd64.exe ./cmd/tt-ro
           GOOS=darwin GOARCH=arm64 go build -ldflags "$ldflags" -o dist/tt-darwin-arm64 ./cmd/tt
+          GOOS=darwin GOARCH=arm64 go build -ldflags "$ldflags" -o dist/tt-ro-darwin-arm64 ./cmd/tt-ro
 
       - name: Create GitHub release
         if: steps.check.outputs.skip == 'false'
@@ -68,5 +71,8 @@ jobs:
             --title "${{ steps.semver.outputs.tag }}" \
             --notes "Automated release from main. Commit ${{ github.sha }}." \
             dist/tt-linux-amd64 \
+            dist/tt-ro-linux-amd64 \
             dist/tt-windows-amd64.exe \
-            dist/tt-darwin-arm64
+            dist/tt-ro-windows-amd64.exe \
+            dist/tt-darwin-arm64 \
+            dist/tt-ro-darwin-arm64
