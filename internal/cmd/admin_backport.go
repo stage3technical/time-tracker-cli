@@ -19,11 +19,14 @@ var adminBackportCmd = &cobra.Command{
 	Short: "Environment data backport (dev only)",
 }
 
+const backportConfirmToken = "app-dev-main"
+
 var adminBackportFromProdCmd = &cobra.Command{
 	Use:   "from-prod",
 	Short: "Copy all prod DynamoDB data into dev (wipes dev first)",
 	Long: `Starts an async backport job on the dev API.
 Requires a dev admin JWT (--profile dev) and --confirm app-dev-main.`,
+	Args: cobra.NoArgs,
 	RunE: runAdminBackportFromProd,
 }
 
@@ -43,11 +46,16 @@ func init() {
 	register(rootCmd, adminCmd, CapWrite)
 }
 
+func requireBackportConfirm(confirm string) error {
+	if strings.TrimSpace(confirm) != backportConfirmToken {
+		return fmt.Errorf("backport from-prod requires --confirm %s", backportConfirmToken)
+	}
+	return nil
+}
+
 func runAdminBackportFromProd(cmd *cobra.Command, args []string) error {
-	if !backportDryRun {
-		if err := requireConfirm(backportConfirm == "app-dev-main", "backport from prod"); err != nil {
-			return err
-		}
+	if err := requireBackportConfirm(backportConfirm); err != nil {
+		return err
 	}
 
 	c, err := resolveClient(true)
