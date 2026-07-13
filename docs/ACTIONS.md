@@ -107,6 +107,7 @@ Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` o
 | Action | Status | Command |
 |--------|--------|---------|
 | List weeks | **implemented** | `tt timesheets list --email user@blvdinteractive.com` |
+| Week roster (all persons) | **implemented** | `tt timesheets week` / `tt timesheets lastweek` |
 | Get week | **implemented** | `tt timesheets get --email user@blvdinteractive.com` |
 | Submit week | **implemented** | `tt timesheets submit --email ...` |
 | Approve (lock) week | **implemented** | `tt timesheets approve --person-id UUID` |
@@ -116,7 +117,13 @@ Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` o
 | **Purge (admin)** | **implemented** | `tt timesheets purge --email ... --week-start 2026-06-30 --confirm` |
 | Bulk approve | api | `tt api POST /api/v1/timesheets/bulk-approve --body '{...}'` |
 
-`list` supports `--before` / `--after` (Monday `YYYY-MM-DD`). `purge` supports `--week-start` (one week) or `--before` (all prior weeks, exclusive). Purge requires `--confirm`.
+`list` supports `--before` / `--after` (Monday `YYYY-MM-DD`). `week` defaults to this Monday (`--week-start` optional); `lastweek` uses the previous Monday. Both support `--status submitted|draft|all` (default `all`) and pretty tables in TTY. `purge` supports `--week-start` (one week) or `--before` (all prior weeks, exclusive). Purge requires `--confirm`.
+
+```bash
+tt timesheets week --profile prod
+tt timesheets week --week-start 2026-07-06 --status submitted
+tt timesheets lastweek --profile dev --status submitted
+```
 
 ### Admin unlock notes
 

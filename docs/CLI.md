@@ -52,7 +52,7 @@ A separate binary for users who need to query data without write access. Built a
 - `persons list`, `persons get`, `persons manager get`, `persons subordinates list`
 - `projects list`, `projects get`
 - `entries list`, `entries get`
-- `timesheets list`, `timesheets get`
+- `timesheets list`, `timesheets get`, `timesheets week`, `timesheets lastweek`
 - `company-roles list`, `company-roles get`
 
 ### Security note
@@ -246,6 +246,9 @@ Timesheet workflow — see **[ACTIONS.md](ACTIONS.md)** § Advanced Workflow.
 ```bash
 tt timesheets list --email marlene.bockler@blvdinteractive.com
 tt timesheets list --email marlene.bockler@blvdinteractive.com --before 2026-07-06
+tt timesheets week
+tt timesheets week --week-start 2026-07-06 --status submitted
+tt timesheets lastweek --profile dev --status submitted
 tt timesheets get --email pam@blvdinteractive.com
 tt timesheets unlock --profile prod --email pam@blvdinteractive.com
 TT_SCHEDULER_SECRET="$SECRET" tt timesheets lock-prior --profile prod
@@ -257,6 +260,8 @@ tt timesheets reject --email user@blvdinteractive.com
 ```
 
 Pretty mode columns for `list`: `WEEK_START`, `ENTRIES`, `HOURS`, `SUBMISSION`, `WEEK_LOCK`.
+
+Pretty mode for `week` / `lastweek`: header with week + lock, then `NAME`, `EMAIL`, `STATUS`, `HOURS`, `ENTRIES`, plus `Submitted: X / Y`.
 
 ### `tt admin backport from-prod`
 

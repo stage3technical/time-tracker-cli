@@ -18,18 +18,45 @@ var timesheetsCmd = &cobra.Command{
 }
 
 var (
-	timesheetWeekStart string
-	timesheetBefore    string
-	timesheetAfter     string
-	timesheetEmail     string
-	timesheetPersonID  string
-	timesheetConfirm   bool
+	timesheetWeekStart    string
+	timesheetBefore       string
+	timesheetAfter        string
+	timesheetEmail        string
+	timesheetPersonID     string
+	timesheetConfirm      bool
+	timesheetRosterStatus string
+	timesheetRosterWeek   string
 )
 
 var timesheetsListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all weeks for a person (GET /api/v1/timesheets/{personId}/weeks)",
 	RunE:  runTimesheetList,
+}
+
+var timesheetsWeekCmd = &cobra.Command{
+	Use:   "week",
+	Short: "Week roster for all persons (GET /api/v1/timesheets/weeks/{weekStartDate})",
+	Long: `Show submission status for every active person for one week.
+
+Defaults to this week's Monday. Use --status to filter rows (submitted, draft, or all).`,
+	Example: `  tt timesheets week
+  tt timesheets week --week-start 2026-07-06
+  tt timesheets week --status submitted
+  tt --output json timesheets week --status submitted`,
+	RunE: runTimesheetWeek,
+}
+
+var timesheetsLastWeekCmd = &cobra.Command{
+	Use:   "lastweek",
+	Short: "Week roster for the previous Monday",
+	Long: `Show submission status for every active person for last week (previous Monday).
+
+Same output as timesheets week. Use --status to filter rows.`,
+	Example: `  tt timesheets lastweek
+  tt timesheets lastweek --status submitted
+  tt --output json timesheets lastweek`,
+	RunE: runTimesheetLastWeek,
 }
 
 var timesheetsGetCmd = &cobra.Command{
@@ -79,6 +106,44 @@ var timesheetsPurgeCmd = &cobra.Command{
 Does not change global WeekLock (other people on that week are unaffected).
 Requires --confirm. Use --week-start for one week or --before for all prior weeks.`,
 	RunE: runTimesheetPurge,
+}
+
+func runTimesheetWeek(cmd *cobra.Command, args []string) error {
+	weekStart := weekStartOrDefault(timesheetRosterWeek)
+	return runWeekRoster(weekStart)
+}
+
+func runTimesheetLastWeek(cmd *cobra.Command, args []string) error {
+	return runWeekRoster(lastWeekStart())
+}
+
+func runWeekRoster(weekStart string) error {
+	statusFilter := strings.ToLower(strings.TrimSpace(timesheetRosterStatus))
+	if statusFilter == "" {
+		statusFilter = "all"
+	}
+	switch statusFilter {
+	case "all", "submitted", "draft":
+	default:
+		return fmt.Errorf("--status must be submitted, draft, or all")
+	}
+
+	c, err := resolveClient(true)
+	if err != nil {
+		return err
+	}
+	path := "/api/v1/timesheets/weeks/" + weekStart
+	resp, err := c.Get(path, nil)
+	if err != nil {
+		handleAPIError(err)
+	}
+	if out.Mode == output.ModePretty {
+		return out.PrintWeekRoster(resp.Body, statusFilter)
+	}
+	if statusFilter != "all" {
+		return out.PrintWeekRoster(resp.Body, statusFilter)
+	}
+	return printResponse(resp.StatusCode, resp.Body)
 }
 
 func runTimesheetList(cmd *cobra.Command, args []string) error {
@@ -237,6 +302,8 @@ func timesheetPersonAction(method, action string) error {
 func init() {
 	register(rootCmd, timesheetsCmd, CapRead)
 	register(timesheetsCmd, timesheetsListCmd, CapRead)
+	register(timesheetsCmd, timesheetsWeekCmd, CapRead)
+	register(timesheetsCmd, timesheetsLastWeekCmd, CapRead)
 	register(timesheetsCmd, timesheetsGetCmd, CapRead)
 	register(timesheetsCmd, timesheetsSubmitCmd, CapWrite)
 	register(timesheetsCmd, timesheetsApproveCmd, CapWrite)
@@ -268,6 +335,11 @@ func init() {
 		timesheetsUnlockCmd,
 	} {
 		cmd.Flags().StringVar(&timesheetWeekStart, "week-start", "", "Monday week start (default: this Monday)")
+	}
+
+	timesheetsWeekCmd.Flags().StringVar(&timesheetRosterWeek, "week-start", "", "Monday week start (default: this Monday)")
+	for _, cmd := range []*cobra.Command{timesheetsWeekCmd, timesheetsLastWeekCmd} {
+		cmd.Flags().StringVar(&timesheetRosterStatus, "status", "all", "filter rows: submitted, draft, or all")
 	}
 
 	timesheetsPurgeCmd.Flags().StringVar(&timesheetWeekStart, "week-start", "", "purge one week (Monday YYYY-MM-DD)")
