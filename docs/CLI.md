@@ -257,6 +257,15 @@ tt timesheets reject --email user@blvdinteractive.com
 
 Pretty mode columns for `list`: `WEEK_START`, `ENTRIES`, `HOURS`, `SUBMISSION`, `WEEK_LOCK`.
 
+### `tt admin backport from-prod`
+
+Copy all prod DynamoDB data into dev (dev API wipes `app-dev-main` first). Requires dev **`admins`** Cognito JWT.
+
+```bash
+tt admin backport from-prod --profile dev --dry-run --confirm app-dev-main
+tt admin backport from-prod --profile dev --confirm app-dev-main --wait
+```
+
 ### `tt entries`
 
 Time reporting entries — see **[ACTIONS.md](ACTIONS.md)** § Time Reporting.
