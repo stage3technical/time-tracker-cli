@@ -140,12 +140,12 @@ func runCompanyRolesDelete(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	rootCmd.AddCommand(companyRolesCmd)
-	companyRolesCmd.AddCommand(companyRolesListCmd)
-	companyRolesCmd.AddCommand(companyRolesGetCmd)
-	companyRolesCmd.AddCommand(companyRolesCreateCmd)
-	companyRolesCmd.AddCommand(companyRolesUpdateCmd)
-	companyRolesCmd.AddCommand(companyRolesDeleteCmd)
+	register(rootCmd, companyRolesCmd, CapRead)
+	register(companyRolesCmd, companyRolesListCmd, CapRead)
+	register(companyRolesCmd, companyRolesGetCmd, CapRead)
+	register(companyRolesCmd, companyRolesCreateCmd, CapWrite)
+	register(companyRolesCmd, companyRolesUpdateCmd, CapWrite)
+	register(companyRolesCmd, companyRolesDeleteCmd, CapWrite)
 
 	companyRolesCreateCmd.Flags().StringVar(&companyRoleName, "name", "", "role name")
 	companyRolesCreateCmd.Flags().StringVar(&companyRoleDescription, "description", "", "optional description")

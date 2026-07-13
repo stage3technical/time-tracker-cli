@@ -15,4 +15,8 @@ for /f "delims=" %%i in ('powershell -NoProfile -Command "(Get-Date).ToUniversal
 go build -ldflags "-s -w -X github.com/stage3technical/time-tracker-cli/internal/version.Version=%VERSION% -X github.com/stage3technical/time-tracker-cli/internal/version.Commit=%COMMIT% -X github.com/stage3technical/time-tracker-cli/internal/version.Date=%DATE%" -o tt.exe ./cmd/tt
 if errorlevel 1 exit /b 1
 
+go build -ldflags "-s -w -X github.com/stage3technical/time-tracker-cli/internal/version.Version=%VERSION% -X github.com/stage3technical/time-tracker-cli/internal/version.Commit=%COMMIT% -X github.com/stage3technical/time-tracker-cli/internal/version.Date=%DATE%" -o tt-ro.exe ./cmd/tt-ro
+if errorlevel 1 exit /b 1
+
 tt.exe version
+tt-ro.exe version

@@ -204,14 +204,14 @@ func timesheetPersonAction(method, action string) error {
 }
 
 func init() {
-	rootCmd.AddCommand(timesheetsCmd)
-	timesheetsCmd.AddCommand(timesheetsListCmd)
-	timesheetsCmd.AddCommand(timesheetsGetCmd)
-	timesheetsCmd.AddCommand(timesheetsSubmitCmd)
-	timesheetsCmd.AddCommand(timesheetsApproveCmd)
-	timesheetsCmd.AddCommand(timesheetsRejectCmd)
-	timesheetsCmd.AddCommand(timesheetsUnlockCmd)
-	timesheetsCmd.AddCommand(timesheetsPurgeCmd)
+	register(rootCmd, timesheetsCmd, CapRead)
+	register(timesheetsCmd, timesheetsListCmd, CapRead)
+	register(timesheetsCmd, timesheetsGetCmd, CapRead)
+	register(timesheetsCmd, timesheetsSubmitCmd, CapWrite)
+	register(timesheetsCmd, timesheetsApproveCmd, CapWrite)
+	register(timesheetsCmd, timesheetsRejectCmd, CapWrite)
+	register(timesheetsCmd, timesheetsUnlockCmd, CapWrite)
+	register(timesheetsCmd, timesheetsPurgeCmd, CapWrite)
 
 	for _, cmd := range []*cobra.Command{
 		timesheetsListCmd,
