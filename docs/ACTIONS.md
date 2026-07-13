@@ -112,6 +112,7 @@ Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` o
 | Approve (lock) week | **implemented** | `tt timesheets approve --person-id UUID` |
 | Reject submission | **implemented** | `tt timesheets reject --email ...` |
 | **Unlock (admin)** | **implemented** | `tt timesheets unlock --email ...` |
+| **Lock prior week (ops)** | **implemented** | `TT_SCHEDULER_SECRET=... tt timesheets lock-prior --profile prod` |
 | **Purge (admin)** | **implemented** | `tt timesheets purge --email ... --week-start 2026-06-30 --confirm` |
 | Bulk approve | api | `tt api POST /api/v1/timesheets/bulk-approve --body '{...}'` |
 

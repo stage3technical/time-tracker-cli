@@ -12,9 +12,10 @@ import (
 
 // Client performs authenticated HTTP requests against the Time Tracker API.
 type Client struct {
-	BaseURL    string
-	Token      string
-	HTTPClient *http.Client
+	BaseURL      string
+	Token        string
+	ExtraHeaders map[string]string
+	HTTPClient   *http.Client
 }
 
 // Response holds the result of an API call.
@@ -66,6 +67,9 @@ func (c *Client) Do(method, path string, query url.Values, body []byte) (*Respon
 	}
 	if c.Token != "" {
 		req.Header.Set("Authorization", "Bearer "+c.Token)
+	}
+	for key, value := range c.ExtraHeaders {
+		req.Header.Set(key, value)
 	}
 
 	resp, err := c.HTTPClient.Do(req)

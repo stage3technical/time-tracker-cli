@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -60,6 +61,14 @@ var timesheetsUnlockCmd = &cobra.Command{
 	Long: `Unlock reverts the person's entries and submission to draft for the week.
 If the week is globally locked, it is reopened for everyone on that week.`,
 	RunE: runTimesheetUnlock,
+}
+
+var timesheetsLockPriorCmd = &cobra.Command{
+	Use:   "lock-prior",
+	Short: "Globally lock the prior Monday week (POST /api/v1/timesheets/weeks/lock-prior)",
+	Long: `Ops/scheduler command: locks the prior Monday week at the submission deadline.
+Requires TT_SCHEDULER_SECRET (X-Scheduler-Secret header). Does not run manager approve.`,
+	RunE: runTimesheetLockPrior,
 }
 
 var timesheetsPurgeCmd = &cobra.Command{
@@ -184,6 +193,23 @@ func runTimesheetUnlock(cmd *cobra.Command, args []string) error {
 	return timesheetPersonAction("POST", "unlock")
 }
 
+func runTimesheetLockPrior(cmd *cobra.Command, args []string) error {
+	secret := strings.TrimSpace(os.Getenv("TT_SCHEDULER_SECRET"))
+	if secret == "" {
+		return fmt.Errorf("TT_SCHEDULER_SECRET is required for lock-prior")
+	}
+	c, err := resolveClient(false)
+	if err != nil {
+		return err
+	}
+	c.ExtraHeaders = map[string]string{"X-Scheduler-Secret": secret}
+	resp, err := c.Do("POST", "/api/v1/timesheets/weeks/lock-prior", nil, nil)
+	if err != nil {
+		handleAPIError(err)
+	}
+	return printResponse(resp.StatusCode, resp.Body)
+}
+
 func timesheetPersonAction(method, action string) error {
 	personID, err := resolvePersonID(timesheetPersonID, timesheetEmail)
 	if err != nil {
@@ -211,6 +237,7 @@ func init() {
 	timesheetsCmd.AddCommand(timesheetsApproveCmd)
 	timesheetsCmd.AddCommand(timesheetsRejectCmd)
 	timesheetsCmd.AddCommand(timesheetsUnlockCmd)
+	timesheetsCmd.AddCommand(timesheetsLockPriorCmd)
 	timesheetsCmd.AddCommand(timesheetsPurgeCmd)
 
 	for _, cmd := range []*cobra.Command{

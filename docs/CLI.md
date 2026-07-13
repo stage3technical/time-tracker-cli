@@ -59,7 +59,7 @@ Tokens are masked in output. `*` marks the default profile.
 | Source | Variable / flag |
 |--------|-----------------|
 | Flag | `--profile`, `--base-url`, `--token` |
-| Env | `TT_PROFILE`, `TT_API_BASE_URL`, `TT_API_TOKEN` |
+| Env | `TT_PROFILE`, `TT_API_BASE_URL`, `TT_API_TOKEN`, `TT_SCHEDULER_SECRET` (ops `lock-prior` only) |
 | File | `~/.tt/config` |
 
 Resolution order: **flags → env → config file**.
@@ -211,6 +211,7 @@ tt timesheets list --email marlene.bockler@blvdinteractive.com
 tt timesheets list --email marlene.bockler@blvdinteractive.com --before 2026-07-06
 tt timesheets get --email pam@blvdinteractive.com
 tt timesheets unlock --profile prod --email pam@blvdinteractive.com
+TT_SCHEDULER_SECRET="$SECRET" tt timesheets lock-prior --profile prod
 tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --week-start 2026-06-30 --confirm
 tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --before 2026-07-06 --confirm
 tt timesheets submit --person-id UUID --week-start 2026-07-06
