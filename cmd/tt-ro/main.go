@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	if err := cmd.Execute(cmd.ModeFull); err != nil {
+	if err := cmd.Execute(cmd.ModeReadOnly); err != nil {
 		os.Exit(1)
 	}
 }

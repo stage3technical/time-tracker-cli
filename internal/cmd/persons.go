@@ -222,12 +222,12 @@ var personsSubordinatesListCmd = &cobra.Command{
 }
 
 func init() {
-	personsCmd.AddCommand(personsListCmd)
-	personsCmd.AddCommand(personsGetCmd)
-	personsCmd.AddCommand(personsUpdateCmd)
-	personsCmd.AddCommand(personsImportCmd)
-	personsCmd.AddCommand(personsManagerCmd)
-	personsCmd.AddCommand(personsSubordinatesCmd)
+	register(personsCmd, personsListCmd, CapRead)
+	register(personsCmd, personsGetCmd, CapRead)
+	register(personsCmd, personsUpdateCmd, CapWrite)
+	register(personsCmd, personsImportCmd, CapWrite)
+	register(personsCmd, personsManagerCmd, CapRead)
+	register(personsCmd, personsSubordinatesCmd, CapRead)
 
 	personsListCmd.Flags().StringVar(&personsListStatus, "status", "", "filter by status (e.g. active)")
 	personsListCmd.Flags().StringVar(&personsListType, "type", "", "filter by employment type (W2, 1099)")
@@ -242,12 +242,12 @@ func init() {
 	personsImportCmd.Flags().StringVar(&importOnDuplicate, "on-duplicate", "update", "on duplicate: update|skip|fail")
 	_ = personsImportCmd.MarkFlagRequired("file")
 
-	personsManagerCmd.AddCommand(personsManagerGetCmd)
-	personsManagerCmd.AddCommand(personsManagerSetCmd)
+	register(personsManagerCmd, personsManagerGetCmd, CapRead)
+	register(personsManagerCmd, personsManagerSetCmd, CapWrite)
 	personsManagerSetCmd.Flags().StringVar(&managerSetID, "manager-id", "", "manager person ID")
 	_ = personsManagerSetCmd.MarkFlagRequired("manager-id")
 
-	personsSubordinatesCmd.AddCommand(personsSubordinatesListCmd)
+	register(personsSubordinatesCmd, personsSubordinatesListCmd, CapRead)
 }
 
 // normalizeEmploymentType maps common inputs to API values.

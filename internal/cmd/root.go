@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -23,8 +24,9 @@ var (
 	out     *output.Writer
 )
 
-// Execute runs the root command.
-func Execute() error {
+// Execute runs the root command in the given mode.
+func Execute(mode Mode) error {
+	attachCommands(mode)
 	return rootCmd.Execute()
 }
 
@@ -75,11 +77,11 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&flagOutput, "output", "", "output format: json|pretty")
 	rootCmd.PersistentFlags().BoolVar(&flagQuiet, "quiet", false, "suppress non-essential stderr")
 
-	rootCmd.AddCommand(configureCmd)
-	rootCmd.AddCommand(healthCmd)
-	rootCmd.AddCommand(meCmd)
-	rootCmd.AddCommand(apiCmd)
-	rootCmd.AddCommand(personsCmd)
+	register(rootCmd, configureCmd, CapLocal)
+	register(rootCmd, healthCmd, CapRead)
+	register(rootCmd, meCmd, CapRead)
+	register(rootCmd, apiCmd, CapWrite)
+	register(rootCmd, personsCmd, CapRead)
 }
 
 func flagOverrides() config.FlagOverrides {
@@ -90,22 +92,35 @@ func flagOverrides() config.FlagOverrides {
 	}
 }
 
-func resolveClient(requireAuth bool) (*client.Client, error) {
+func resolveClient(requireAuth bool) (client.HTTPDoer, error) {
+	var baseURL, token string
 	if requireAuth {
 		resolved, err := config.Resolve(cfgFile, flagOverrides())
 		if err != nil {
 			return nil, err
 		}
-		return client.New(resolved.BaseURL, resolved.Token), nil
+		baseURL = resolved.BaseURL
+		token = resolved.Token
+	} else {
+		resolved := config.ResolveOptional(cfgFile, flagOverrides())
+		if resolved.BaseURL == "" {
+			return nil, fmt.Errorf("base URL is required (flag, %s, or profile)", config.EnvBaseURL)
+		}
+		baseURL = resolved.BaseURL
+		token = resolved.Token
 	}
-	resolved := config.ResolveOptional(cfgFile, flagOverrides())
-	if resolved.BaseURL == "" {
-		return nil, fmt.Errorf("base URL is required (flag, %s, or profile)", config.EnvBaseURL)
+	c := client.New(baseURL, token)
+	if cliMode == ModeReadOnly {
+		return client.NewReadOnly(c), nil
 	}
-	return client.New(resolved.BaseURL, resolved.Token), nil
+	return c, nil
 }
 
 func handleAPIError(err error) {
+	if errors.Is(err, client.ErrReadOnly) {
+		out.PrintError("read-only mode: this operation is not permitted")
+		os.Exit(1)
+	}
 	if apiErr, ok := err.(*client.APIError); ok {
 		detail := client.ParseDetail(apiErr.Body)
 		out.PrintError(fmt.Sprintf("error: %s", detail))

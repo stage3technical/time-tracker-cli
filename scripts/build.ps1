@@ -22,4 +22,6 @@ $ldflags = @(
 )
 
 go build -ldflags ($ldflags -join " ") -o tt.exe ./cmd/tt
+go build -ldflags ($ldflags -join " ") -o tt-ro.exe ./cmd/tt-ro
 & .\tt.exe version
+& .\tt-ro.exe version

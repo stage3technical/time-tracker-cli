@@ -195,12 +195,12 @@ func runProjectsArchive(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	rootCmd.AddCommand(projectsCmd)
-	projectsCmd.AddCommand(projectsListCmd)
-	projectsCmd.AddCommand(projectsGetCmd)
-	projectsCmd.AddCommand(projectsCreateCmd)
-	projectsCmd.AddCommand(projectsUpdateCmd)
-	projectsCmd.AddCommand(projectsArchiveCmd)
+	register(rootCmd, projectsCmd, CapRead)
+	register(projectsCmd, projectsListCmd, CapRead)
+	register(projectsCmd, projectsGetCmd, CapRead)
+	register(projectsCmd, projectsCreateCmd, CapWrite)
+	register(projectsCmd, projectsUpdateCmd, CapWrite)
+	register(projectsCmd, projectsArchiveCmd, CapWrite)
 
 	projectsListCmd.Flags().StringVar(&projectsListStatus, "status", "", "filter by status (active, archived)")
 

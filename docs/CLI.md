@@ -17,16 +17,53 @@ scripts\build.cmd           # Windows Command Prompt
 ```
 
 ```bash
-./scripts/build.sh          # Linux / macOS / WSL
+./scripts/build.sh          # Linux / macOS / WSL (builds tt and tt-ro)
 ```
 
 ```powershell
-.\scripts\build.ps1         # Windows PowerShell
+.\scripts\build.ps1         # Windows PowerShell (builds tt.exe and tt-ro.exe)
 ```
 
-Plain `go build -o tt.exe ./cmd/tt` shows `dev (commit none, built unknown)`.
+Plain `go build -o tt.exe ./cmd/tt` shows `dev (commit none, built unknown)`. Build both binaries with the scripts above or:
+
+```bash
+go build -o tt ./cmd/tt && go build -o tt-ro ./cmd/tt-ro
+```
+
 
 **Version:** `tt version` or `tt --version`. Merges to `main` auto-tag **semver** releases (`v0.1.0`, …) via GitHub Actions — bump rules: `feat:` → minor, breaking/`!` → major, else patch.
+
+## Read-only CLI (`tt-ro`)
+
+A separate binary for users who need to query data without write access. Built alongside `tt` on every release.
+
+| | `tt` | `tt-ro` |
+|---|------|---------|
+| Configure profiles | yes | yes |
+| List / get data | yes | yes |
+| Create / update / delete | yes | no |
+| Timesheet workflow (submit, approve, unlock, purge) | yes | no |
+| `tt api` generic requests | yes | not registered |
+
+### Included in `tt-ro`
+
+- `configure` (list, set, interactive)
+- `health`, `me`, `version`
+- `persons list`, `persons get`, `persons manager get`, `persons subordinates list`
+- `projects list`, `projects get`
+- `entries list`, `entries get`
+- `timesheets list`, `timesheets get`
+- `company-roles list`, `company-roles get`
+
+### Security note
+
+`tt-ro` enforces read-only at the **CLI only** (command registration + HTTP client guard). Anyone with a JWT can still call write endpoints via full `tt` or `curl`. Server-side read-only tokens are a future API change.
+
+```bash
+tt-ro configure set --profile prod --base-url https://... --token "$JWT"
+tt-ro persons list --profile prod
+tt-ro timesheets get --profile prod --email user@example.com --week-start 2026-07-06
+```
 
 ## Configuration
 
