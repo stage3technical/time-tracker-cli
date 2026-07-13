@@ -28,6 +28,8 @@ func TestReadOnlyMode_HidesWriteCommands(t *testing.T) {
 	register(rootCmd, apiCmd, CapWrite)
 	register(rootCmd, timesheetsCmd, CapRead)
 	register(timesheetsCmd, timesheetsListCmd, CapRead)
+	register(timesheetsCmd, timesheetsWeekCmd, CapRead)
+	register(timesheetsCmd, timesheetsLastWeekCmd, CapRead)
 	register(timesheetsCmd, timesheetsPurgeCmd, CapWrite)
 	register(rootCmd, projectsCmd, CapRead)
 	register(projectsCmd, projectsArchiveCmd, CapWrite)
@@ -51,6 +53,28 @@ func TestReadOnlyMode_HidesWriteCommands(t *testing.T) {
 		if !strings.Contains(help, visible) {
 			t.Errorf("help should mention %q", visible)
 		}
+	}
+}
+
+func TestReadOnlyMode_WeekRosterCommandsVisible(t *testing.T) {
+	resetForTest()
+
+	register(rootCmd, timesheetsCmd, CapRead)
+	register(timesheetsCmd, timesheetsListCmd, CapRead)
+	register(timesheetsCmd, timesheetsWeekCmd, CapRead)
+	register(timesheetsCmd, timesheetsLastWeekCmd, CapRead)
+	register(timesheetsCmd, timesheetsPurgeCmd, CapWrite)
+
+	attachCommands(ModeReadOnly)
+
+	if !hasSubcommand(timesheetsCmd, "week") {
+		t.Fatal("week should be registered in read-only mode")
+	}
+	if !hasSubcommand(timesheetsCmd, "lastweek") {
+		t.Fatal("lastweek should be registered in read-only mode")
+	}
+	if hasSubcommand(timesheetsCmd, "purge") {
+		t.Fatal("purge should not be registered in read-only mode")
 	}
 }
 

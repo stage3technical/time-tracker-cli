@@ -186,6 +186,75 @@ func (w *Writer) PrintTimesheetWeeksList(data []byte) error {
 	return tw.Flush()
 }
 
+// PrintWeekRoster renders GET /timesheets/weeks/{date} with optional status filter.
+// statusFilter is "all", "submitted", or "draft".
+func (w *Writer) PrintWeekRoster(data []byte, statusFilter string) error {
+	var roster map[string]any
+	if err := json.Unmarshal(data, &roster); err != nil {
+		return w.PrintJSON(data)
+	}
+	persons, _ := roster["persons"].([]any)
+	filtered := make([]any, 0, len(persons))
+	submittedShown := 0
+	for _, raw := range persons {
+		p, ok := raw.(map[string]any)
+		if !ok {
+			continue
+		}
+		status := nestedStr(p, "submission", "status")
+		if status == "" {
+			status = "draft"
+		}
+		if statusFilter == "submitted" || statusFilter == "draft" {
+			if !strings.EqualFold(status, statusFilter) {
+				continue
+			}
+		}
+		if strings.EqualFold(status, "submitted") {
+			submittedShown++
+		}
+		filtered = append(filtered, p)
+	}
+	roster["persons"] = filtered
+
+	if w.Mode == ModeJSON {
+		enc, err := json.Marshal(roster)
+		if err != nil {
+			return err
+		}
+		return w.PrintJSON(enc)
+	}
+
+	weekStart := strVal(roster, "weekStartDate")
+	lock := nestedStr(roster, "weekLock", "status")
+	if lock == "" {
+		lock = "open"
+	}
+	_, _ = fmt.Fprintf(w.Stdout, "Week %s  lock=%s\n\n", weekStart, lock)
+
+	tw := tabwriter.NewWriter(w.Stdout, 0, 0, 2, ' ', 0)
+	_, _ = fmt.Fprintln(tw, "NAME\tEMAIL\tSTATUS\tHOURS\tENTRIES")
+	for _, raw := range filtered {
+		p := raw.(map[string]any)
+		status := nestedStr(p, "submission", "status")
+		if status == "" {
+			status = "draft"
+		}
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n",
+			strVal(p, "name"),
+			strVal(p, "email"),
+			status,
+			strVal(p, "totalHours"),
+			strVal(p, "entryCount"),
+		)
+	}
+	if err := tw.Flush(); err != nil {
+		return err
+	}
+	_, _ = fmt.Fprintf(w.Stdout, "\nSubmitted: %d / %d\n", submittedShown, len(filtered))
+	return nil
+}
+
 func nestedStr(m map[string]any, outer, inner string) string {
 	obj, ok := m[outer].(map[string]any)
 	if !ok {

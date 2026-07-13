@@ -16,6 +16,27 @@ func TestDefaultWeekStartMonday(t *testing.T) {
 	}
 }
 
+func TestLastWeekStart(t *testing.T) {
+	got := lastWeekStart()
+	now := time.Now()
+	daysSinceMonday := (int(now.Weekday()) + 6) % 7
+	want := now.AddDate(0, 0, -daysSinceMonday-7).Format("2006-01-02")
+	if got != want {
+		t.Fatalf("lastWeekStart() = %q, want %q", got, want)
+	}
+	thisMon, err := time.Parse("2006-01-02", defaultWeekStart())
+	if err != nil {
+		t.Fatal(err)
+	}
+	lastMon, err := time.Parse("2006-01-02", got)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if thisMon.Sub(lastMon) != 7*24*time.Hour {
+		t.Fatalf("lastWeekStart should be 7 days before this Monday: this=%s last=%s", thisMon, lastMon)
+	}
+}
+
 func TestWeekStartOrDefault(t *testing.T) {
 	if got := weekStartOrDefault("2026-01-05"); got != "2026-01-05" {
 		t.Fatalf("explicit week-start = %q", got)

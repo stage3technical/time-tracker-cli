@@ -15,6 +15,13 @@ func defaultWeekStart() string {
 	return monday.Format("2006-01-02")
 }
 
+func lastWeekStart() string {
+	now := time.Now()
+	daysSinceMonday := (int(now.Weekday()) + 6) % 7
+	monday := now.AddDate(0, 0, -daysSinceMonday-7)
+	return monday.Format("2006-01-02")
+}
+
 func weekStartOrDefault(flag string) string {
 	if strings.TrimSpace(flag) != "" {
 		return strings.TrimSpace(flag)

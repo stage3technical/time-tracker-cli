@@ -76,7 +76,7 @@ Introduce a small registry (e.g. `internal/cmd/capabilities.go`):
 | Capability | Examples |
 |------------|----------|
 | `CapLocal` | `configure` (list/set) — no API |
-| `CapRead` | `health`, `me`, `version`, `persons list/get`, `projects list/get`, `entries list/get`, `timesheets list/get`, `company-roles list/get`, relationship GETs |
+| `CapRead` | `health`, `me`, `version`, `persons list/get`, `projects list/get`, `entries list/get`, `timesheets list/get/week/lastweek`, `company-roles list/get`, relationship GETs |
 | `CapWrite` | everything else: create/update/delete/archive/import, workflow POSTs, `api` |
 
 In `ModeReadOnly`:
