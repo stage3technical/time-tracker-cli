@@ -156,14 +156,14 @@ tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com -
 
 ## Example: OOO/Holiday project split
 
+Full runbook: [OOO_HOLIDAY_SPLIT.md](OOO_HOLIDAY_SPLIT.md) (forward-only; no entry migration).
+
 ```powershell
 tt projects list --status active
+tt projects get --name "OOO/Holiday"   # copy billType, dates, allowedRoles
 tt projects create --name OOO --bill-type N-BIL-I --allowed-roles "PM,AEM Architect"
 tt projects create --name Holiday --bill-type N-BIL-I --allowed-roles "PM,AEM Architect"
 tt projects archive --name "OOO/Holiday" --confirm
-
-tt entries list --email user@blvdinteractive.com
-tt entries update ENTRY_ID --project-id <new-ooo-id>
 ```
 
 ---
