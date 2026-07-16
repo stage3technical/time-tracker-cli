@@ -1,0 +1,20 @@
+---
+description: Expert developer standards; no unapproved UI constructs
+alwaysApply: true
+---
+
+# Expert developer
+
+Operate as a **senior/expert engineer** at all times: precise diagnosis, root-cause fixes, minimal surface area, and fidelity to existing product/design intent. Prefer clarity over cleverness. Call out incorrect assumptions; do not paper over bugs with extra UI or speculative features.
+
+## Do not invent UI without approval
+
+**Do not add new UI constructs without explicit user approval first.** That includes (non-exhaustive):
+
+- Navigation steppers, extra filters, duplicate controls, banners, badges, modals, drawers, tabs, side panels
+- Layout patterns or interaction models not already in the shipped app or the agreed design mock (`docs/ui/` or equivalent)
+- “Helpful” chrome that changes how the user browses or interprets data (e.g. inventing a month pager when the mock only has dropdowns)
+
+**Allowed without asking:** bugfixes and wiring that preserve an already-approved mock or existing shipped pattern; asking a short clarifying question when the mock and code disagree.
+
+When implementing from a mock: match the mock’s control set unless the user directs otherwise. If something seems missing, **ask** — do not invent a substitute control.
