@@ -113,6 +113,8 @@ Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` o
 | Approve (lock) week | **implemented** | `tt timesheets approve --person-id UUID` |
 | Reject submission | **implemented** | `tt timesheets reject --email ...` |
 | **Unlock (admin)** | **implemented** | `tt timesheets unlock --email ...` |
+| **Re-lock person (admin)** | **implemented** | `tt timesheets relock --email ...` |
+| **Lock week (admin)** | **implemented** | `tt timesheets lock-week [--week-start YYYY-MM-DD]` |
 | **Lock prior week (ops)** | **implemented** | `TT_SCHEDULER_SECRET=... tt timesheets lock-prior --profile prod` |
 | **Purge (admin)** | **implemented** | `tt timesheets purge --email ... --week-start 2026-06-30 --confirm` |
 | Bulk approve | api | `tt api POST /api/v1/timesheets/bulk-approve --body '{...}'` |
@@ -125,11 +127,13 @@ tt timesheets week --week-start 2026-07-06 --status submitted
 tt timesheets lastweek --profile dev --status submitted
 ```
 
-### Admin unlock notes
+### Admin unlock / re-lock notes
 
-- Reverts the **target person's** entries and submission to `draft`.
+- Unlock reverts the **target person's** entries and submission to `draft`, and records a **per-person unlock exception**.
 - If the **week is globally locked**, unlock **opens the week for everyone** (week locks are not per-person).
-- Requires API with `POST /api/v1/timesheets/{personId}/unlock` deployed.
+- Re-lock clears that person's exception, freezes their entries to `locked` (no resubmit required). When no exceptions remain, the API restores the global week lock.
+- `lock-week` globally locks a Monday week (admin recovery when the week is open with no exception rows). Distinct from scheduler `lock-prior`.
+- Requires API with unlock / relock / week-lock routes deployed. Week roster pretty output shows an `UNLOCKED` column (`yes` when `unlockException`).
 
 ### Admin purge notes
 
@@ -176,7 +180,7 @@ tt projects archive --name "OOO/Holiday" --confirm
 
 ---
 
-## Example: unlock Pam's timesheet this week
+## Example: unlock then re-lock a person's week
 
 ```powershell
 tt configure set --profile prod `
@@ -185,6 +189,11 @@ tt configure set --profile prod `
 
 tt timesheets get --profile prod --email pam@blvdinteractive.com
 tt timesheets unlock --profile prod --email pam@blvdinteractive.com
+# … person corrects entries …
+tt timesheets relock --profile prod --email pam@blvdinteractive.com
+
+# Recovery when a week is open with no exception rows:
+tt timesheets lock-week --profile prod --week-start 2026-07-06
 ```
 
 ---

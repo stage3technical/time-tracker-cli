@@ -42,7 +42,7 @@ A separate binary for users who need to query data without write access. Built a
 | Configure profiles | yes | yes |
 | List / get data | yes | yes |
 | Create / update / delete | yes | no |
-| Timesheet workflow (submit, approve, unlock, purge) | yes | no |
+| Timesheet workflow (submit, approve, unlock, relock, lock-week, purge) | yes | no |
 | `tt api` generic requests | yes | not registered |
 
 ### Included in `tt-ro`
@@ -251,6 +251,8 @@ tt timesheets week --week-start 2026-07-06 --status submitted
 tt timesheets lastweek --profile dev --status submitted
 tt timesheets get --email pam@blvdinteractive.com
 tt timesheets unlock --profile prod --email pam@blvdinteractive.com
+tt timesheets relock --profile prod --email pam@blvdinteractive.com
+tt timesheets lock-week --profile prod --week-start 2026-07-06
 TT_SCHEDULER_SECRET="$SECRET" tt timesheets lock-prior --profile prod
 tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --week-start 2026-06-30 --confirm
 tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --before 2026-07-06 --confirm
@@ -261,7 +263,7 @@ tt timesheets reject --email user@blvdinteractive.com
 
 Pretty mode columns for `list`: `WEEK_START`, `ENTRIES`, `HOURS`, `SUBMISSION`, `WEEK_LOCK`.
 
-Pretty mode for `week` / `lastweek`: header with week + lock, then `NAME`, `EMAIL`, `STATUS`, `HOURS`, `ENTRIES`, plus `Submitted: X / Y`.
+Pretty mode for `week` / `lastweek`: header with week + lock, then `NAME`, `EMAIL`, `STATUS`, `UNLOCKED`, `HOURS`, `ENTRIES`, plus `Submitted: X / Y`.
 
 ### `tt admin backport from-prod`
 

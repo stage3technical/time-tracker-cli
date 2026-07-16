@@ -119,7 +119,7 @@ Use in `resolveClient()` when `ModeReadOnly` — catches any missed write path o
 **Exclude from `tt-ro`:**
 
 - All mutating person/project/entry/role/account commands
-- `timesheets submit|approve|reject|unlock|purge`
+- `timesheets submit|approve|reject|unlock|relock|lock-week|purge`
 - `projects archive`
 - **`tt api` entirely** (not registered)
 

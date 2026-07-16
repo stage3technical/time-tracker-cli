@@ -17,6 +17,7 @@ func sampleRosterJSON() []byte {
       "email": "corinna@example.com",
       "entryCount": 5,
       "totalHours": "40.0",
+      "unlockException": false,
       "submission": { "status": "submitted", "submittedAt": "2026-07-11T18:00:00Z" }
     },
     {
@@ -25,6 +26,7 @@ func sampleRosterJSON() []byte {
       "email": "leon@example.com",
       "entryCount": 1,
       "totalHours": "8.0",
+      "unlockException": true,
       "submission": { "status": "draft" }
     }
   ]
@@ -44,6 +46,8 @@ func TestPrintWeekRosterPrettyAll(t *testing.T) {
 		"Leon Example",
 		"submitted",
 		"draft",
+		"UNLOCKED",
+		"yes",
 		"Submitted: 1 / 2",
 	} {
 		if !strings.Contains(got, want) {
