@@ -240,6 +240,7 @@ tt persons subordinates list MANAGER_ID
 ### `tt timesheets`
 
 Timesheet workflow — see **[ACTIONS.md](ACTIONS.md)** § Advanced Workflow.
+Week lock / unlock rules: **[WEEK_LOCK_MODEL.md](WEEK_LOCK_MODEL.md)**.
 
 `--week-start` defaults to **this Monday** (local timezone) when omitted.
 

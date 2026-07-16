@@ -2,11 +2,15 @@
 
 Add per-person unlock exceptions and an admin Re-lock action so clearing a person's exception (e.g. David Mead) can freeze their entries without requiring resubmit; when no exceptions remain, the global week lock is restored.
 
+**Read first:** [WEEK_LOCK_MODEL.md](WEEK_LOCK_MODEL.md) — agreed meaning of global week lock, auto-lock, unlock, edit rules, and why **approve is lame**.
+
 ## Answers locked in
 
 - **Model B:** Per-person unlock **exception**; Re-lock **cancels that person’s exception** (not a separate “approve”).
 - **After unlock:** person is **draft** (submission + entries) — already true today via `unlock_timesheet` in `src/time_tracker_api/domain/weeks.py`.
 - **Re-lock does not require submit** — admin may re-lock while still draft.
+- **Edit rules:** week locked ⇒ nobody edits (including draft). Week open + draft ⇒ editable. See WEEK_LOCK_MODEL.
+- **Approve** is **not** the way to “lock a user.” It wrongly closes the global week for everyone; candidate for removal. Prefer auto-lock + unlock/re-lock.
 
 ## Problem
 
@@ -28,7 +32,7 @@ flowchart TD
 - **Unlock** (existing + extend): draft person; open week if locked; **create** `WeekUnlockException` for `(personId, weekStartDate)`.
 - **Re-lock person** (new): delete exception; set that person’s entries to `LOCKED` (even if draft/unsubmitted); if **no exceptions remain** for the week, call `lock_week()`.
 - **UI:** person with active exception shows amber **Unlocked** + **Re-lock**; confirm modal with week range; warn that if this is the last exception, the week re-locks for everyone; Cancel no-ops; refresh roster in place.
-- **Out of this PR:** toast, optional reason/notes, full audit log (story AC leftovers).
+- **Out of this PR:** toast, optional reason/notes, full audit log (story AC leftovers). Removing or gutting approve is a follow-up (called out in WEEK_LOCK_MODEL).
 
 ## API (`time-tracker-api`)
 
