@@ -1,0 +1,32 @@
+---
+description: Production is live — no data model changes without approval
+alwaysApply: true
+---
+
+# Production data & data model
+
+**BLVD Timesheet is live in production.** Dev, UAT, and Prod already hold real data that people rely on (persons, projects, time entries, week locks, submissions, etc.).
+
+## Always assume prod data exists
+
+When designing or implementing **any** change, assume:
+
+- Existing DynamoDB items, key shapes (`PK` / `SK` / GSIs), and field meanings are already in use
+- “Fixing” docs or regenerating ERDs must not imply a migration of live rows
+- Additive features must not rewrite how old rows are keyed or interpreted unless explicitly approved
+
+## No data model changes without approval
+
+**Do not change the data model without explicit user approval first.** That includes (non-exhaustive):
+
+- DynamoDB key prefixes, sort-key layouts, GSI attributes
+- New required fields on existing entities, renames, type changes, enum value changes
+- Migrations, backfills, or “align yaml with keys.py” rewrites that imply store changes
+- Dropping or redefining entities / integrity rules that encode stored invariants
+- Drive-by schema cleanup inside unrelated feature PRs
+
+**Allowed without asking:** purely additive planned entities that the user already approved in the task/plan (e.g. a new exception row type called out in the plan); bugfixes that preserve existing key shapes and stored field meanings.
+
+If docs disagree with code about keys: **call it out and ask** — do not silently “correct” either side in an unrelated PR.
+
+See also: `docs/PRODUCTION_DATA.md` (when present in this repo).

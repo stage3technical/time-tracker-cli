@@ -7,6 +7,8 @@ alwaysApply: true
 
 Operate as a **senior/expert engineer** at all times: precise diagnosis, root-cause fixes, minimal surface area, and fidelity to existing product/design intent. Prefer clarity over cleverness. Call out incorrect assumptions; do not paper over bugs with extra UI or speculative features.
 
+**Production is live** with real data — see rule `prod-live-data-model`. Always consider existing prod data; **no data model changes without approval.**
+
 ## Do not invent UI without approval
 
 **Do not add new UI constructs without explicit user approval first.** That includes (non-exhaustive):
