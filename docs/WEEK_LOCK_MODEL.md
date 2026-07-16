@@ -2,6 +2,8 @@
 
 Canonical product rules for who can edit a timesheet week. Source of truth for API, admin UI, and CLI.
 
+**Production is live** — see [PRODUCTION_DATA.md](PRODUCTION_DATA.md). Unlock/re-lock adds `WeekUnlockException` only; it must not rewrite existing TimeEntry / pointer key shapes.
+
 ## Two layers (do not conflate)
 
 | Layer | What it is | What it controls |
