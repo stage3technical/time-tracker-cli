@@ -11,6 +11,7 @@ Add per-person unlock exceptions and an admin Re-lock action so clearing a perso
 - **Re-lock does not require submit** — admin may re-lock while still draft.
 - **Edit rules:** week locked ⇒ nobody edits (including draft). Week open + draft ⇒ editable. See WEEK_LOCK_MODEL.
 - **Approve** is **not** the way to “lock a user.” It wrongly closes the global week for everyone; candidate for removal. Prefer auto-lock + unlock/re-lock.
+- **Integrity:** drafts in a locked week are allowed; scanner must not require “no drafts when locked.” See WEEK_LOCK_MODEL § Integrity scanner.
 
 ## Problem
 

@@ -133,8 +133,9 @@ tt timesheets lastweek --profile dev --status submitted
 
 - **`WeekLock` locked** ⇒ nobody edits that week (including draft).
 - **Week open + draft** ⇒ can edit.
-- **Auto-lock / `lock-prior`** ⇒ global lock for the prior Monday (intended deadline close).
+- **Auto-lock / `lock-prior`** ⇒ global lock for the prior Monday (intended deadline close). Draft rows may remain after lock — allowed.
 - **`lock-week`** ⇒ admin global lock for a given Monday (recovery).
+- Integrity scanner must not treat “drafts in a locked week” as an error (see WEEK_LOCK_MODEL).
 
 ### Approve is lame
 

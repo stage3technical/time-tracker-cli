@@ -75,6 +75,20 @@ Approving one person closing the week for **everyone** does not make sense as pr
 - **Submit** — person marks their week submitted (entries → submitted). Does not lock the week.
 - **Reject** — manager path: back to draft for that person. Does not change global `WeekLock`.
 
+## Integrity scanner (aligned)
+
+Hourly integrity must **not** treat these as errors:
+
+| State | Why OK |
+|-------|--------|
+| Locked week + **draft** entries | Auto-lock / admin lock-week; people who never submitted stay draft but cannot edit |
+| Open week + others’ **locked** / **submitted** rows | Unlock opened the week for one person; others’ statuses are left alone |
+| Locked week + **draft** submission + **locked** entries | After admin person re-lock (no resubmit) |
+
+Write-time PR-19 (mutate only when week open) stays enforced in the domain. Rule `entry_in_open_week_only` is `enforcement: write_time` (scanner skips). Former `entry_in_locked_week_editable` (no drafts in locked week) is **removed**.
+
+See time-tracker-api `docs/data-model/integrity-rules.yaml` and `integrity-checks.md`.
+
 ## Related docs
 
 - [ADMIN_PERSON_RELOCK_PLAN.md](ADMIN_PERSON_RELOCK_PLAN.md) — exception + re-lock implementation plan
