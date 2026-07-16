@@ -7,7 +7,8 @@ alwaysApply: true
 
 - **Almost always** use a feature branch and open a PR — do not push directly to `develop`/`main` unless the user explicitly asks
 - **Default PR base is `develop`** when the repo has a `develop` branch; otherwise `main`
-- **Never** use `chore/` as a branch name prefix — use `feature/`, `fix/`, or `docs/` instead
+- **Never** use `chore/` as a branch name prefix — use `feature/`, `fix/`, `docs/`, `sync/`, or `promote/` instead
+- **Never** use `chore:` in PR titles or commit subjects that become PR titles — use `feature:`, `fix:`, `docs:`, `sync:`, or `promote:` instead (e.g. `sync: main into develop`, `promote: develop to main`)
 - Default: `feature/<short-description>` for new work
 
 ## Open PRs; user merges

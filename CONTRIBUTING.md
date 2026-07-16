@@ -6,7 +6,8 @@ This CLI wraps the **BLVD Timesheet HTTP API only** — no direct DynamoDB acces
 
 ## Pull requests
 
-- Use a feature branch (`feature/…`, `fix/…`, or `docs/…`) — not `chore/`
+- Use a feature branch (`feature/…`, `fix/…`, `docs/…`, `sync/…`, or `promote/…`) — not `chore/`
+- Do not use `chore:` in PR titles — prefer `feature:`, `fix:`, `docs:`, `sync:`, or `promote:`
 - Open PRs as **ready for review** (not draft) — `gh pr create --base main` without `--draft` (this repo has no `develop` branch)
 - **User merges** — do not run `gh pr merge` unless explicitly asked
 - When merging, default to **Create a merge commit** unless squash/rebase is requested
