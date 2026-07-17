@@ -111,7 +111,7 @@ Mirror API route groups from [time-tracker-api routes](https://github.com/stage3
 | `accounts` | CRUD | `/api/v1/accounts` |
 | `company-roles` | CRUD | `/api/v1/company-roles` |
 | `entries` | list/get/create/update/delete + filters | `/api/v1/time-reporting/entries` |
-| `timesheets` | week, submit, approve, reject, unlock, bulk-approve | `/api/v1/timesheets` |
+| `timesheets` | week, submit, approve (lame), reject, unlock, relock, lock-week, bulk-approve | `/api/v1/timesheets` — see [WEEK_LOCK_MODEL.md](WEEK_LOCK_MODEL.md) |
 | `documentation` | explanation CRUD | `/api/v1/documentation/explanation` |
 | `relationships` | two-way / one-way CRUD | `/api/v1/employee-relationships` |
 | `items` | create (scaffold) | `/items` |

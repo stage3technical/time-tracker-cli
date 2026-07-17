@@ -43,7 +43,7 @@ tt health && tt me
 - `tt configure`, `tt configure list`, `tt configure set`
 - `tt health`, `tt me`
 - `tt persons` — list, get, update, import, manager get/set, subordinates list
-- `tt timesheets` — list, get, submit, approve, reject, unlock, purge
+- `tt timesheets` — list, get, submit, approve, reject, unlock, relock, lock-week, purge
 - `tt entries` — list, get, create, update, delete (destructive requires `--confirm`)
 - `tt projects` — list, get, create, update, archive (lookup by `--name` / `--code`)
 - `tt company-roles` — list, get, create, update, delete

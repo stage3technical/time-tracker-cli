@@ -34,12 +34,14 @@ Reuse `internal/output` pattern (`PrintTimesheetWeeksList`).
 ```text
 Week 2026-07-06  lock=open
 
-NAME     EMAIL                    STATUS     HOURS  ENTRIES
-Corinna  corinna@...              submitted  40.0   5
-Leon     leon@...                 draft       8.0   1
+NAME     EMAIL                    STATUS     UNLOCKED  HOURS  ENTRIES
+Corinna  corinna@...              submitted  -         40.0   5
+Leon     leon@...                 draft      yes        8.0   1
 
 Submitted: 12 / 28
 ```
+
+`UNLOCKED=yes` when the API row has `unlockException` (admin unlock exception active).
 
 - Keep API person order (sorted by name server-side)
 - Summary line: count of `submitted` vs rows shown (filter-aware denominator)

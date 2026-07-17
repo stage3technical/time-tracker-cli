@@ -233,17 +233,22 @@ func (w *Writer) PrintWeekRoster(data []byte, statusFilter string) error {
 	_, _ = fmt.Fprintf(w.Stdout, "Week %s  lock=%s\n\n", weekStart, lock)
 
 	tw := tabwriter.NewWriter(w.Stdout, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintln(tw, "NAME\tEMAIL\tSTATUS\tHOURS\tENTRIES")
+	_, _ = fmt.Fprintln(tw, "NAME\tEMAIL\tSTATUS\tUNLOCKED\tHOURS\tENTRIES")
 	for _, raw := range filtered {
 		p := raw.(map[string]any)
 		status := nestedStr(p, "submission", "status")
 		if status == "" {
 			status = "draft"
 		}
-		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n",
+		unlocked := "-"
+		if boolVal(p, "unlockException") {
+			unlocked = "yes"
+		}
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n",
 			strVal(p, "name"),
 			strVal(p, "email"),
 			status,
+			unlocked,
 			strVal(p, "totalHours"),
 			strVal(p, "entryCount"),
 		)
@@ -277,6 +282,15 @@ func strVal(m map[string]any, key string) string {
 		return ""
 	}
 	return fmt.Sprint(v)
+}
+
+func boolVal(m map[string]any, key string) bool {
+	v, ok := m[key]
+	if !ok || v == nil {
+		return false
+	}
+	b, ok := v.(bool)
+	return ok && b
 }
 
 // ParseOutputFlag validates --output value.
