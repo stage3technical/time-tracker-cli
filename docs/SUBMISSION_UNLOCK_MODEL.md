@@ -1,6 +1,6 @@
 # Submission + unlock model (agreed)
 
-Canonical product rules for who can edit a timesheet week. Replaces the former global **week lock** / auto-lock / re-lock model ([WEEK_LOCK_MODEL.md](WEEK_LOCK_MODEL.md) — historical).
+Canonical product rules for who can edit a timesheet week. Replaces the former global **week lock** / auto-lock / re-lock model (retired).
 
 **Production is live** — see [PRODUCTION_DATA.md](PRODUCTION_DATA.md). This change does **not** rewrite DynamoDB key shapes. Existing `WeekLock` / `WeekUnlockException` rows may remain as unused orphans.
 
@@ -75,4 +75,3 @@ Scanner must not require “no drafts in a locked week.” Write-time gate is su
 - Plan / implementation note: this document
 - Frontend admin: unlock row action only
 - CLI: `tt timesheets unlock`
-- Historical: [WEEK_LOCK_MODEL.md](WEEK_LOCK_MODEL.md), [ADMIN_PERSON_RELOCK_PLAN.md](ADMIN_PERSON_RELOCK_PLAN.md)

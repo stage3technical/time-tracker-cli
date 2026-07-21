@@ -46,8 +46,8 @@ profile = dev
 base_url = https://8igr6pspqh.execute-api.us-east-1.amazonaws.com
 token = eyJhbGciOi...
 
-[profile uat]
-base_url = https://<uat-api-endpoint>
+[profile prod]
+base_url = https://timeapi.blvdinteractive.com
 token = eyJhbGciOi...
 ```
 
@@ -111,7 +111,7 @@ Mirror API route groups from [time-tracker-api routes](https://github.com/stage3
 | `accounts` | CRUD | `/api/v1/accounts` |
 | `company-roles` | CRUD | `/api/v1/company-roles` |
 | `entries` | list/get/create/update/delete + filters | `/api/v1/time-reporting/entries` |
-| `timesheets` | week, submit, approve (lame), reject, unlock, relock, lock-week, bulk-approve | `/api/v1/timesheets` — see [WEEK_LOCK_MODEL.md](WEEK_LOCK_MODEL.md) |
+| `timesheets` | week, submit, reject, unlock, purge | `/api/v1/timesheets` — see [SUBMISSION_UNLOCK_MODEL.md](SUBMISSION_UNLOCK_MODEL.md) |
 | `documentation` | explanation CRUD | `/api/v1/documentation/explanation` |
 | `relationships` | two-way / one-way CRUD | `/api/v1/employee-relationships` |
 | `items` | create (scaffold) | `/items` |
@@ -181,7 +181,7 @@ time-tracker-cli/
 |-------|--------|
 | Phase 1 (configure, health, me, api, persons) | **Shipped** |
 | Phase 2a (timesheets, entries, projects core CRUD) | **Shipped** |
-| Phase 2b (persons create/deactivate, project roles, bulk-approve, accounts, …) | Planned |
+| Phase 2b (persons create/deactivate, project roles, accounts, …) | Planned |
 
 ## Risk note
 

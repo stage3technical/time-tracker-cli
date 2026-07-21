@@ -8,7 +8,7 @@ Add a second binary `tt-ro` in time-tracker-cli that shares the same Cobra comma
 
 2. **Enforcement** — **CLI only for now**. API read/write authorization is out of scope; document that `curl` or full `tt` can still mutate.
 
-3. **Timesheet workflow** — **Strict read-only**: `timesheets list/get` and `entries list/get` only. No `submit`, `approve`, `reject`, `unlock`, or `purge`.
+3. **Timesheet workflow** — **Strict read-only**: `timesheets list/get` and `entries list/get` only. No `submit`, `reject`, `unlock`, or `purge`.
 
 4. **`tt api`** — **Not included in `tt-ro` at all**. No generic API escape hatch; no flag to enable it.
 
@@ -119,7 +119,7 @@ Use in `resolveClient()` when `ModeReadOnly` — catches any missed write path o
 **Exclude from `tt-ro`:**
 
 - All mutating person/project/entry/role/account commands
-- `timesheets submit|approve|reject|unlock|relock|lock-week|purge`
+- `timesheets submit|reject|unlock|purge`
 - `projects archive`
 - **`tt api` entirely** (not registered)
 
