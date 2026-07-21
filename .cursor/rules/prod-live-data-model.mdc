@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Production data & data model
 
-**BLVD Timesheet is live in production.** Dev, UAT, and Prod already hold real data that people rely on (persons, projects, time entries, week locks, submissions, etc.).
+**BLVD Timesheet is live in production.** Dev and Prod already hold real data that people rely on (persons, projects, time entries, submissions, etc.). Editability is gated by **submissions** (draft vs submitted), not week locks.
 
 ## Always assume prod data exists
 
@@ -29,4 +29,4 @@ When designing or implementing **any** change, assume:
 
 If docs disagree with code about keys: **call it out and ask** — do not silently “correct” either side in an unrelated PR.
 
-See also: `docs/PRODUCTION_DATA.md` (when present in this repo).
+See also: `docs/PRODUCTION_DATA.md` (when present in this repo) and `docs/SUBMISSION_UNLOCK_MODEL.md`.

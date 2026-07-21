@@ -1,21 +1,21 @@
 ---
-description: Use PR branches for changes; open ready PRs; user merges
+description: Use PR branches for changes; open ready PRs; human merges on GitHub
 alwaysApply: true
 ---
 
 # Git branches and PRs
 
 - **Almost always** use a feature branch and open a PR — do not push directly to `develop`/`main` unless the user explicitly asks
-- **Default PR base is `develop`** when the repo has a `develop` branch; otherwise `main`
+- **Default PR base:** `develop` when the repo has a `develop` branch (**develop → Dev**); otherwise `main` (**main → Prod**). **This repo (`time-tracker-cli`) has no `develop` — typical base is `main` (Prod).**
 - **Never** use `chore/` as a branch name prefix — use `feature/`, `fix/`, `docs/`, `sync/`, or `promote/` instead
 - **Never** use `chore:` in PR titles or commit subjects that become PR titles — use `feature:`, `fix:`, `docs:`, `sync:`, or `promote:` instead (e.g. `sync: main into develop`, `promote: develop to main`)
 - Default: `feature/<short-description>` for new work
 
-## Open PRs; user merges
+## Open PRs; humans merge on GitHub
 
-- **Always** open a PR with `gh pr create --base main` and return the URL when shipping work — do not stop at a local commit or branch push
+- **Always** open a PR with `gh pr create --base main` (this repo) and return the URL when shipping work — do not stop at a local commit or branch push
 - **Always open PRs as ready for review** — do not pass `--draft` to `gh pr create` unless the user explicitly asks; if a PR is draft, run `gh pr ready`
-- **Never** run `gh pr merge` or merge a PR unless the user **explicitly** asks in that message
+- **Always human-merged on GitHub** — **never** run `gh pr merge` or merge a PR unless the user **explicitly** asks in that message
 - **Never** use squash merge (`gh pr merge --squash`) unless the user **explicitly** requests squash
 - When the user merges, the default style is **Create a merge commit** (normal merge), not squash or rebase
 - Do not pass `--delete-branch` on merge unless the user asks

@@ -42,7 +42,7 @@ A separate binary for users who need to query data without write access. Built a
 | Configure profiles | yes | yes |
 | List / get data | yes | yes |
 | Create / update / delete | yes | no |
-| Timesheet workflow (submit, approve, unlock, relock, lock-week, purge) | yes | no |
+| Timesheet workflow (submit, reject, unlock, purge) | yes | no |
 | `tt api` generic requests | yes | not registered |
 
 ### Included in `tt-ro`
@@ -96,7 +96,7 @@ Tokens are masked in output. `*` marks the default profile.
 | Source | Variable / flag |
 |--------|-----------------|
 | Flag | `--profile`, `--base-url`, `--token` |
-| Env | `TT_PROFILE`, `TT_API_BASE_URL`, `TT_API_TOKEN`, `TT_SCHEDULER_SECRET` (ops `lock-prior` only) |
+| Env | `TT_PROFILE`, `TT_API_BASE_URL`, `TT_API_TOKEN` |
 | File | `~/.tt/config` |
 
 Resolution order: **flags → env → config file**.
@@ -240,7 +240,7 @@ tt persons subordinates list MANAGER_ID
 ### `tt timesheets`
 
 Timesheet workflow — see **[ACTIONS.md](ACTIONS.md)** § Advanced Workflow.
-Week lock / unlock rules: **[WEEK_LOCK_MODEL.md](WEEK_LOCK_MODEL.md)**.
+Submission + unlock rules: **[SUBMISSION_UNLOCK_MODEL.md](SUBMISSION_UNLOCK_MODEL.md)**.
 
 `--week-start` defaults to **this Monday** (local timezone) when omitted.
 
@@ -252,19 +252,15 @@ tt timesheets week --week-start 2026-07-06 --status submitted
 tt timesheets lastweek --profile dev --status submitted
 tt timesheets get --email pam@blvdinteractive.com
 tt timesheets unlock --profile prod --email pam@blvdinteractive.com
-tt timesheets relock --profile prod --email pam@blvdinteractive.com
-tt timesheets lock-week --profile prod --week-start 2026-07-06
-TT_SCHEDULER_SECRET="$SECRET" tt timesheets lock-prior --profile prod
 tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --week-start 2026-06-30 --confirm
 tt timesheets purge --profile prod --email marlene.bockler@blvdinteractive.com --before 2026-07-06 --confirm
 tt timesheets submit --person-id UUID --week-start 2026-07-06
-tt timesheets approve --person-id UUID
 tt timesheets reject --email user@blvdinteractive.com
 ```
 
-Pretty mode columns for `list`: `WEEK_START`, `ENTRIES`, `HOURS`, `SUBMISSION`, `WEEK_LOCK`.
+Pretty mode columns for `list`: `WEEK_START`, `ENTRIES`, `HOURS`, `SUBMISSION`.
 
-Pretty mode for `week` / `lastweek`: header with week + lock, then `NAME`, `EMAIL`, `STATUS`, `UNLOCKED`, `HOURS`, `ENTRIES`, plus `Submitted: X / Y`.
+Pretty mode for `week` / `lastweek`: header with week, then `NAME`, `EMAIL`, `STATUS`, `HOURS`, `ENTRIES`, plus `Submitted: X / Y`.
 
 ### `tt admin backport from-prod`
 

@@ -181,7 +181,7 @@ tt projects archive --name "OOO/Holiday" --confirm
 
 ---
 
-## Example: unlock then re-lock a person's week
+## Example: unlock a person's week
 
 ```powershell
 tt configure set --profile prod `

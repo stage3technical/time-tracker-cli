@@ -1,24 +1,26 @@
 ---
-description: CLI must delegate business logic to the API, not AWS/DynamoDB directly
+description: CLI is a thin HTTP client; all ops via API; prefer CLI commands over one-off scripts
 globs: "**/*.{go,md}"
 alwaysApply: true
 ---
 
 # CLI via API only
 
-All `tt` functionality must call the BLVD Timesheet HTTP API. The CLI is a thin client — it does not own business rules or persistence.
+The CLI (`tt` / `tt-ro`) is a **thin HTTP client** for the BLVD Timesheet API. It does not own business rules or persistence. **Bruno** collections are the same pattern — they only call the HTTP API.
 
 ## Do
 
 - Use `internal/api` (or equivalent) HTTP client for every mutation and query
 - Read/write config and credentials locally only (`~/.tt/config`)
 - Surface API errors to the user; do not re-implement validation the API already enforces
+- Prefer **extending `tt` commands** for operational workflows over one-off scripts
 
 ## Do not
 
 - Import or call AWS SDKs (`dynamodb`, `s3`, etc.) for application data
-- Embed DynamoDB PK/SK logic, entity shapes, or integrity rules in CLI code
+- Perform **DynamoDB writes** (or embeds PK/SK / entity / integrity logic) in the CLI
 - Add "fast path" scripts that bypass the API for writes
+- Invent one-off scripts when a CLI command (or API endpoint + CLI wrapper) would do
 
 ## Examples
 
