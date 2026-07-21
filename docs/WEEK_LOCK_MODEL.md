@@ -1,3 +1,5 @@
+> **Superseded** by [SUBMISSION_UNLOCK_MODEL.md](SUBMISSION_UNLOCK_MODEL.md). Global week lock / auto-lock / re-lock are retired.
+
 # Week lock model (agreed)
 
 Canonical product rules for who can edit a timesheet week. Source of truth for API, admin UI, and CLI.

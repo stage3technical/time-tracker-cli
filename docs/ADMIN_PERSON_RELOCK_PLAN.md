@@ -1,3 +1,5 @@
+> **Superseded** by [SUBMISSION_UNLOCK_MODEL.md](SUBMISSION_UNLOCK_MODEL.md). Re-lock / week lock retired.
+
 # Admin per-person Re-lock (exception model)
 
 Add per-person unlock exceptions and an admin Re-lock action so clearing a person's exception (e.g. David Mead) can freeze their entries without requiring resubmit; when no exceptions remain, the global week lock is restored.
