@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/stage3technical/time-tracker-cli/internal/client"
 	"github.com/stage3technical/time-tracker-cli/internal/output"
 )
 
@@ -71,11 +69,6 @@ var timesheetsSubmitCmd = &cobra.Command{
 	RunE:  runTimesheetSubmit,
 }
 
-var timesheetsApproveCmd = &cobra.Command{
-	Use:   "approve",
-	Short: "Approve and lock a week (POST /api/v1/timesheets/{personId}/approve)",
-	RunE:  runTimesheetApprove,
-}
 
 var timesheetsRejectCmd = &cobra.Command{
 	Use:   "reject",
@@ -85,47 +78,22 @@ var timesheetsRejectCmd = &cobra.Command{
 
 var timesheetsUnlockCmd = &cobra.Command{
 	Use:   "unlock",
-	Short: "Admin unlock: reopen a person's week for editing (POST /api/v1/timesheets/{personId}/unlock)",
-	Long: `Unlock reverts the person's entries and submission to draft for the week.
-If the week is globally locked, it is reopened for everyone on that week.
-Also records a per-person unlock exception (see timesheets relock).`,
+	Short: "Admin unlock one person's timesheet for one week (POST /api/v1/timesheets/{personId}/unlock)",
+	Long: `Unlock sets that person+week submission and entries back to draft.
+They must submit again. Does not use global week lock (retired).
+See docs/SUBMISSION_UNLOCK_MODEL.md.`,
+	Example: `  tt timesheets unlock --email david.mead@blvdinteractive.com
+  tt timesheets unlock --email david.mead@blvdinteractive.com --week-start 2026-07-06`,
 	RunE: runTimesheetUnlock,
 }
 
-var timesheetsRelockCmd = &cobra.Command{
-	Use:   "relock",
-	Short: "Admin re-lock: clear unlock exception and freeze person entries (POST /api/v1/timesheets/{personId}/relock)",
-	Long: `Clears the person's unlock exception and sets their entries to locked.
-Does not require the person to resubmit. When no unlock exceptions remain for
-the week, restores the global week lock.`,
-	Example: `  tt timesheets relock --email david.mead@blvdinteractive.com
-  tt timesheets relock --email david.mead@blvdinteractive.com --week-start 2026-07-06`,
-	RunE: runTimesheetRelock,
-}
 
-var timesheetsLockWeekCmd = &cobra.Command{
-	Use:   "lock-week",
-	Short: "Admin lock: globally lock a Monday week (POST /api/v1/timesheets/weeks/{weekStartDate}/lock)",
-	Long: `Locks the given Monday week for everyone (admin recovery when the week is open).
-Defaults to this Monday. Distinct from lock-prior (scheduler secret).`,
-	Example: `  tt timesheets lock-week
-  tt timesheets lock-week --week-start 2026-07-06 --profile prod`,
-	RunE: runTimesheetLockWeek,
-}
 
-var timesheetsLockPriorCmd = &cobra.Command{
-	Use:   "lock-prior",
-	Short: "Globally lock the prior Monday week (POST /api/v1/timesheets/weeks/lock-prior)",
-	Long: `Ops/scheduler command: locks the prior Monday week at the submission deadline.
-Requires TT_SCHEDULER_SECRET (X-Scheduler-Secret header). Does not run manager approve.`,
-	RunE: runTimesheetLockPrior,
-}
 
 var timesheetsPurgeCmd = &cobra.Command{
 	Use:   "purge",
 	Short: "Admin purge: delete entries and submission for week(s) (POST /api/v1/timesheets/{personId}/purge)",
 	Long: `Deletes all time entries and the WeekSubmission for the person/week.
-Does not change global WeekLock (other people on that week are unaffected).
 Requires --confirm. Use --week-start for one week or --before for all prior weeks.`,
 	RunE: runTimesheetPurge,
 }
@@ -269,9 +237,6 @@ func runTimesheetSubmit(cmd *cobra.Command, args []string) error {
 	return printResponse(resp.StatusCode, resp.Body)
 }
 
-func runTimesheetApprove(cmd *cobra.Command, args []string) error {
-	return timesheetPersonAction("POST", "approve")
-}
 
 func runTimesheetReject(cmd *cobra.Command, args []string) error {
 	return timesheetPersonAction("POST", "reject")
@@ -281,44 +246,8 @@ func runTimesheetUnlock(cmd *cobra.Command, args []string) error {
 	return timesheetPersonAction("POST", "unlock")
 }
 
-func runTimesheetRelock(cmd *cobra.Command, args []string) error {
-	return timesheetPersonAction("POST", "relock")
-}
 
-func runTimesheetLockWeek(cmd *cobra.Command, args []string) error {
-	weekStart := weekStartOrDefault(timesheetWeekStart)
-	c, err := resolveClient(true)
-	if err != nil {
-		return err
-	}
-	path := "/api/v1/timesheets/weeks/" + weekStart + "/lock"
-	resp, err := c.Do("POST", path, nil, nil)
-	if err != nil {
-		handleAPIError(err)
-	}
-	return printResponse(resp.StatusCode, resp.Body)
-}
 
-func runTimesheetLockPrior(cmd *cobra.Command, args []string) error {
-	secret := strings.TrimSpace(os.Getenv("TT_SCHEDULER_SECRET"))
-	if secret == "" {
-		return fmt.Errorf("TT_SCHEDULER_SECRET is required for lock-prior")
-	}
-	c, err := resolveClient(false)
-	if err != nil {
-		return err
-	}
-	api, ok := c.(*client.Client)
-	if !ok {
-		return fmt.Errorf("lock-prior requires full write client")
-	}
-	api.ExtraHeaders = map[string]string{"X-Scheduler-Secret": secret}
-	resp, err := api.Do("POST", "/api/v1/timesheets/weeks/lock-prior", nil, nil)
-	if err != nil {
-		handleAPIError(err)
-	}
-	return printResponse(resp.StatusCode, resp.Body)
-}
 
 func timesheetPersonAction(method, action string) error {
 	personID, err := resolvePersonID(timesheetPersonID, timesheetEmail)
@@ -346,22 +275,16 @@ func init() {
 	register(timesheetsCmd, timesheetsLastWeekCmd, CapRead)
 	register(timesheetsCmd, timesheetsGetCmd, CapRead)
 	register(timesheetsCmd, timesheetsSubmitCmd, CapWrite)
-	register(timesheetsCmd, timesheetsApproveCmd, CapWrite)
 	register(timesheetsCmd, timesheetsRejectCmd, CapWrite)
 	register(timesheetsCmd, timesheetsUnlockCmd, CapWrite)
-	register(timesheetsCmd, timesheetsRelockCmd, CapWrite)
-	register(timesheetsCmd, timesheetsLockWeekCmd, CapWrite)
-	register(timesheetsCmd, timesheetsLockPriorCmd, CapWrite)
 	register(timesheetsCmd, timesheetsPurgeCmd, CapWrite)
 
 	for _, cmd := range []*cobra.Command{
 		timesheetsListCmd,
 		timesheetsGetCmd,
 		timesheetsSubmitCmd,
-		timesheetsApproveCmd,
 		timesheetsRejectCmd,
 		timesheetsUnlockCmd,
-		timesheetsRelockCmd,
 		timesheetsPurgeCmd,
 	} {
 		cmd.Flags().StringVar(&timesheetPersonID, "person-id", "", "person UUID")
@@ -373,11 +296,8 @@ func init() {
 	for _, cmd := range []*cobra.Command{
 		timesheetsGetCmd,
 		timesheetsSubmitCmd,
-		timesheetsApproveCmd,
 		timesheetsRejectCmd,
 		timesheetsUnlockCmd,
-		timesheetsRelockCmd,
-		timesheetsLockWeekCmd,
 	} {
 		cmd.Flags().StringVar(&timesheetWeekStart, "week-start", "", "Monday week start (default: this Monday)")
 	}

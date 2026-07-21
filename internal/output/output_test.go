@@ -17,7 +17,6 @@ func sampleRosterJSON() []byte {
       "email": "corinna@example.com",
       "entryCount": 5,
       "totalHours": "40.0",
-      "unlockException": false,
       "submission": { "status": "submitted", "submittedAt": "2026-07-11T18:00:00Z" }
     },
     {
@@ -26,7 +25,6 @@ func sampleRosterJSON() []byte {
       "email": "leon@example.com",
       "entryCount": 1,
       "totalHours": "8.0",
-      "unlockException": true,
       "submission": { "status": "draft" }
     }
   ]
@@ -41,17 +39,20 @@ func TestPrintWeekRosterPrettyAll(t *testing.T) {
 	}
 	got := buf.String()
 	for _, want := range []string{
-		"Week 2026-07-06  lock=open",
+		"Week 2026-07-06",
 		"Corinna Example",
 		"Leon Example",
 		"submitted",
 		"draft",
-		"UNLOCKED",
-		"yes",
 		"Submitted: 1 / 2",
 	} {
 		if !strings.Contains(got, want) {
 			t.Errorf("pretty output missing %q\n%s", want, got)
+		}
+	}
+	for _, unwant := range []string{"UNLOCKED", "lock="} {
+		if strings.Contains(got, unwant) {
+			t.Errorf("pretty output should not contain %q\n%s", unwant, got)
 		}
 	}
 }
@@ -82,9 +83,9 @@ func TestPrintWeekRosterJSONFilter(t *testing.T) {
 	}
 	got := buf.String()
 	if !strings.Contains(got, "Leon Example") {
-		t.Fatalf("expected draft person in JSON:\n%s", got)
+		t.Fatalf("expected draft row in JSON:\n%s", got)
 	}
 	if strings.Contains(got, "Corinna Example") {
-		t.Fatalf("submitted person should be filtered from JSON:\n%s", got)
+		t.Fatalf("submitted row should be filtered out of JSON:\n%s", got)
 	}
 }

@@ -110,16 +110,11 @@ Week start is always **Monday** (`YYYY-MM-DD`). Use `--person-id` or `--email` o
 | Week roster (all persons) | **implemented** | `tt timesheets week` / `tt timesheets lastweek` |
 | Get week | **implemented** | `tt timesheets get --email user@blvdinteractive.com` |
 | Submit week | **implemented** | `tt timesheets submit --email ...` |
-| Approve | **implemented (lame)** | `tt timesheets approve --person-id UUID` — see note below |
 | Reject submission | **implemented** | `tt timesheets reject --email ...` |
-| **Unlock (admin)** | **implemented** | `tt timesheets unlock --email ...` |
-| **Re-lock person (admin)** | **implemented** | `tt timesheets relock --email ...` |
-| **Lock week (admin)** | **implemented** | `tt timesheets lock-week [--week-start YYYY-MM-DD]` |
-| **Lock prior week (ops)** | **implemented** | `TT_SCHEDULER_SECRET=... tt timesheets lock-prior --profile prod` |
+| **Unlock (admin)** | **implemented** | `tt timesheets unlock --email ... --week-start YYYY-MM-DD` |
 | **Purge (admin)** | **implemented** | `tt timesheets purge --email ... --week-start 2026-06-30 --confirm` |
-| Bulk approve | api (lame) | `tt api POST /api/v1/timesheets/bulk-approve --body '{...}'` |
 
-Canonical lock/unlock rules: **[WEEK_LOCK_MODEL.md](WEEK_LOCK_MODEL.md)**. Exception/re-lock: **[ADMIN_PERSON_RELOCK_PLAN.md](ADMIN_PERSON_RELOCK_PLAN.md)**.
+Canonical rules: **[SUBMISSION_UNLOCK_MODEL.md](SUBMISSION_UNLOCK_MODEL.md)** (replaces week lock / auto-lock / re-lock).
 
 `list` supports `--before` / `--after` (Monday `YYYY-MM-DD`). `week` defaults to this Monday (`--week-start` optional); `lastweek` uses the previous Monday. Both support `--status submitted|draft|all` (default `all`) and pretty tables in TTY. `purge` supports `--week-start` (one week) or `--before` (all prior weeks, exclusive). Purge requires `--confirm`.
 
@@ -129,31 +124,23 @@ tt timesheets week --week-start 2026-07-06 --status submitted
 tt timesheets lastweek --profile dev --status submitted
 ```
 
-### Week lock / edit rules (short)
+### Edit / unlock rules (short)
 
-- **`WeekLock` locked** ⇒ nobody edits that week (including draft).
-- **Week open + draft** ⇒ can edit.
-- **Auto-lock / `lock-prior`** ⇒ global lock for the prior Monday (intended deadline close). Draft rows may remain after lock — allowed.
-- **`lock-week`** ⇒ admin global lock for a given Monday (recovery).
-- Integrity scanner must not treat “drafts in a locked week” as an error (see WEEK_LOCK_MODEL).
+- **Submitted** (person + week) ⇒ cannot edit until admin unlock.
+- **Draft** ⇒ can edit.
+- **Unlock** ⇒ admin sets that person+week back to draft; they must submit again.
+- No global week lock, auto-lock, re-lock, or approve.
 
-### Approve is lame
+### Admin unlock notes
 
-`approve` locks that person’s entries **and** sets global `WeekLock` for everyone. That is not “lock this user.” Prefer auto-lock + unlock/re-lock. Candidate for removal; do not recommend `approve` for closing a week.
-
-### Admin unlock / re-lock notes
-
-- Unlock reverts the **target person's** entries and submission to `draft`, and records a **per-person unlock exception**.
-- If the **week is globally locked**, unlock **opens the week for everyone** (required so that person can edit under PR-19).
-- Re-lock clears that person's exception, freezes their entries to `locked` (no resubmit required). When no exceptions remain, the API restores the global week lock.
-- `lock-week` globally locks a Monday week (admin recovery when the week is open with no exception rows). Distinct from scheduler `lock-prior`.
-- Requires API with unlock / relock / week-lock routes deployed. Week roster pretty output shows an `UNLOCKED` column (`yes` when `unlockException`).
+- Unlock is scoped to **personId + weekStartDate**.
+- Reverts that week’s submission and entries to `draft`.
+- Pretty week roster shows `NAME`, `EMAIL`, `STATUS`, `HOURS`, `ENTRIES`.
 
 ### Admin purge notes
 
 - Deletes **all entries** and **WeekSubmission** for the person/week.
-- Does **not** change global `WeekLock` (other people on that week are unaffected).
-- Works on locked/submitted weeks without `unlock`.
+- Works on submitted weeks without `unlock`.
 
 ---
 
@@ -202,12 +189,8 @@ tt configure set --profile prod `
   --token "<JWT>"
 
 tt timesheets get --profile prod --email pam@blvdinteractive.com
-tt timesheets unlock --profile prod --email pam@blvdinteractive.com
-# … person corrects entries …
-tt timesheets relock --profile prod --email pam@blvdinteractive.com
-
-# Recovery when a week is open with no exception rows:
-tt timesheets lock-week --profile prod --week-start 2026-07-06
+tt timesheets unlock --profile prod --email pam@blvdinteractive.com --week-start 2026-07-06
+# … person corrects entries and submits again …
 ```
 
 ---

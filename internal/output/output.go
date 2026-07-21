@@ -226,29 +226,20 @@ func (w *Writer) PrintWeekRoster(data []byte, statusFilter string) error {
 	}
 
 	weekStart := strVal(roster, "weekStartDate")
-	lock := nestedStr(roster, "weekLock", "status")
-	if lock == "" {
-		lock = "open"
-	}
-	_, _ = fmt.Fprintf(w.Stdout, "Week %s  lock=%s\n\n", weekStart, lock)
+	_, _ = fmt.Fprintf(w.Stdout, "Week %s\n\n", weekStart)
 
 	tw := tabwriter.NewWriter(w.Stdout, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintln(tw, "NAME\tEMAIL\tSTATUS\tUNLOCKED\tHOURS\tENTRIES")
+	_, _ = fmt.Fprintln(tw, "NAME\tEMAIL\tSTATUS\tHOURS\tENTRIES")
 	for _, raw := range filtered {
 		p := raw.(map[string]any)
 		status := nestedStr(p, "submission", "status")
 		if status == "" {
 			status = "draft"
 		}
-		unlocked := "-"
-		if boolVal(p, "unlockException") {
-			unlocked = "yes"
-		}
-		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n",
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n",
 			strVal(p, "name"),
 			strVal(p, "email"),
 			status,
-			unlocked,
 			strVal(p, "totalHours"),
 			strVal(p, "entryCount"),
 		)
@@ -284,14 +275,6 @@ func strVal(m map[string]any, key string) string {
 	return fmt.Sprint(v)
 }
 
-func boolVal(m map[string]any, key string) bool {
-	v, ok := m[key]
-	if !ok || v == nil {
-		return false
-	}
-	b, ok := v.(bool)
-	return ok && b
-}
 
 // ParseOutputFlag validates --output value.
 func ParseOutputFlag(s string) (Mode, error) {
