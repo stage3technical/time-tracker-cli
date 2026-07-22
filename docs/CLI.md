@@ -165,10 +165,11 @@ Body: inline JSON or `@file.json`.
 ```bash
 tt persons list
 tt persons list --status active --type W2
+tt persons list --timesheet-exempt true
 tt persons list --output json
 ```
 
-Pretty mode columns: `ID`, `NAME`, `EMAIL`, `ROLE`, `TEAM`.
+Pretty mode columns: `ID`, `NAME`, `EMAIL`, `ROLE`, `TEAM`, `EXEMPT`.
 
 ### `tt persons get`
 
@@ -189,9 +190,12 @@ tt persons update PERSON_ID \
   --primary-role "AEM Architect" \
   --employment-type W2 \
   --team Engineering
+
+tt persons update PERSON_ID --timesheet-exempt true
+tt persons update PERSON_ID --timesheet-exempt false
 ```
 
-At least one field flag is required.
+At least one field flag is required. `timesheetExempt` marks people who are not required to submit timesheets (admin roster shows Excluded).
 
 ### `tt persons import`
 

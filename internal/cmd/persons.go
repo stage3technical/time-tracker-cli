@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -17,8 +18,9 @@ var personsCmd = &cobra.Command{
 }
 
 var (
-	personsListStatus string
-	personsListType   string
+	personsListStatus          string
+	personsListType            string
+	personsListTimesheetExempt string
 )
 
 var personsListCmd = &cobra.Command{
@@ -35,6 +37,13 @@ var personsListCmd = &cobra.Command{
 		}
 		if personsListType != "" {
 			q.Set("type", personsListType)
+		}
+		if personsListTimesheetExempt != "" {
+			v, err := parseBoolFlag(personsListTimesheetExempt)
+			if err != nil {
+				return fmt.Errorf("--timesheet-exempt: %w", err)
+			}
+			q.Set("timesheetExempt", strconv.FormatBool(v))
 		}
 		resp, err := c.Get("/api/v1/persons", q)
 		if err != nil {
@@ -65,11 +74,12 @@ var personsGetCmd = &cobra.Command{
 }
 
 var (
-	updateName           string
-	updateEmail          string
-	updatePrimaryRole    string
-	updateEmploymentType string
-	updateTeam           string
+	updateName             string
+	updateEmail            string
+	updatePrimaryRole      string
+	updateEmploymentType   string
+	updateTeam             string
+	updateTimesheetExempt  string
 )
 
 var personsUpdateCmd = &cobra.Command{
@@ -77,7 +87,7 @@ var personsUpdateCmd = &cobra.Command{
 	Short: "Update person fields (PUT /api/v1/persons/{id})",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		payload := map[string]string{}
+		payload := map[string]any{}
 		if updateName != "" {
 			payload["name"] = updateName
 		}
@@ -92,6 +102,13 @@ var personsUpdateCmd = &cobra.Command{
 		}
 		if updateTeam != "" {
 			payload["team"] = updateTeam
+		}
+		if updateTimesheetExempt != "" {
+			v, err := parseBoolFlag(updateTimesheetExempt)
+			if err != nil {
+				return fmt.Errorf("--timesheet-exempt: %w", err)
+			}
+			payload["timesheetExempt"] = v
 		}
 		if len(payload) == 0 {
 			return fmt.Errorf("at least one field flag is required")
@@ -231,12 +248,14 @@ func init() {
 
 	personsListCmd.Flags().StringVar(&personsListStatus, "status", "", "filter by status (e.g. active)")
 	personsListCmd.Flags().StringVar(&personsListType, "type", "", "filter by employment type (W2, 1099)")
+	personsListCmd.Flags().StringVar(&personsListTimesheetExempt, "timesheet-exempt", "", "filter by timesheetExempt (true|false)")
 
 	personsUpdateCmd.Flags().StringVar(&updateName, "name", "", "person name")
 	personsUpdateCmd.Flags().StringVar(&updateEmail, "email", "", "email address")
 	personsUpdateCmd.Flags().StringVar(&updatePrimaryRole, "primary-role", "", "primary role")
 	personsUpdateCmd.Flags().StringVar(&updateEmploymentType, "employment-type", "", "employment type (W2, 1099)")
 	personsUpdateCmd.Flags().StringVar(&updateTeam, "team", "", "team name")
+	personsUpdateCmd.Flags().StringVar(&updateTimesheetExempt, "timesheet-exempt", "", "timesheetExempt (true|false)")
 
 	personsImportCmd.Flags().StringVar(&importFile, "file", "", "JSON payload file")
 	personsImportCmd.Flags().StringVar(&importOnDuplicate, "on-duplicate", "update", "on duplicate: update|skip|fail")
@@ -259,5 +278,16 @@ func normalizeEmploymentType(s string) string {
 		return "1099"
 	default:
 		return s
+	}
+}
+
+func parseBoolFlag(s string) (bool, error) {
+	switch strings.ToLower(strings.TrimSpace(s)) {
+	case "true", "1", "yes", "y":
+		return true, nil
+	case "false", "0", "no", "n":
+		return false, nil
+	default:
+		return false, fmt.Errorf("want true or false, got %q", s)
 	}
 }

@@ -77,14 +77,15 @@ func (w *Writer) PrintPersonsList(data []byte) error {
 		return w.PrintJSON(data)
 	}
 	tw := tabwriter.NewWriter(w.Stdout, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintln(tw, "ID\tNAME\tEMAIL\tROLE\tTEAM")
+	_, _ = fmt.Fprintln(tw, "ID\tNAME\tEMAIL\tROLE\tTEAM\tEXEMPT")
 	for _, p := range persons {
-		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n",
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n",
 			strVal(p, "id"),
 			strVal(p, "name"),
 			strVal(p, "email"),
 			strVal(p, "primaryRole"),
 			strVal(p, "team"),
+			exemptLabel(p),
 		)
 	}
 	return tw.Flush()
@@ -236,6 +237,9 @@ func (w *Writer) PrintWeekRoster(data []byte, statusFilter string) error {
 		if status == "" {
 			status = "draft"
 		}
+		if boolVal(p, "timesheetExempt") {
+			status = "excluded"
+		}
 		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n",
 			strVal(p, "name"),
 			strVal(p, "email"),
@@ -273,6 +277,28 @@ func strVal(m map[string]any, key string) string {
 		return ""
 	}
 	return fmt.Sprint(v)
+}
+
+func boolVal(m map[string]any, key string) bool {
+	v, ok := m[key]
+	if !ok || v == nil {
+		return false
+	}
+	switch t := v.(type) {
+	case bool:
+		return t
+	case string:
+		return strings.EqualFold(t, "true") || t == "1"
+	default:
+		return false
+	}
+}
+
+func exemptLabel(p map[string]any) string {
+	if boolVal(p, "timesheetExempt") {
+		return "yes"
+	}
+	return ""
 }
 
 
