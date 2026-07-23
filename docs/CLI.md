@@ -1,13 +1,15 @@
 # `tt` command reference
 
-Cross-platform CLI for the [BLVD Timesheet API](https://github.com/stage3technical/time-tracker-api).
+Cross-platform CLI for the BLVD Timesheet API (`time-tracker-api`).
 
 See also: [ACTIONS.md](ACTIONS.md) (commands by API group), [PLAN.md](PLAN.md) (design), [README](../README.md) (install).
 
 ## Install
 
+From a local clone of `time-tracker-cli` (repo root):
+
 ```bash
-go install github.com/stage3technical/time-tracker-cli/cmd/tt@latest
+go install ./cmd/tt@latest
 ```
 
 Or build from source (embeds git tag/commit):
