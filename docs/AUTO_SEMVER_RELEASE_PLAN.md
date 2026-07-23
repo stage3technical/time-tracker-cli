@@ -1,6 +1,6 @@
 # Auto semver across Time Tracker repos
 
-Canonical plan: [time-tracker-api/docs/plans/auto-semver-release.md](https://github.com/stage3technical/time-tracker-api/blob/main/docs/plans/auto-semver-release.md)
+Canonical plan: **time-tracker-api** `docs/plans/auto-semver-release.md`
 
 This repo (**time-tracker-cli**) is the **reference implementation** and stays unchanged:
 

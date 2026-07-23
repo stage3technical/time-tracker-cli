@@ -12,7 +12,7 @@ This CLI wraps the **BLVD Timesheet HTTP API only** — no direct DynamoDB acces
 - **User merges** — do not run `gh pr merge` unless explicitly asked
 - When merging, default to **Create a merge commit** unless squash/rebase is requested
 
-Canonical rules: [time-tracker-api/docs/PROJECT_APPROACH.md](https://github.com/stage3technical/time-tracker-api/blob/main/docs/PROJECT_APPROACH.md) § Git and PR workflow and § Releases (semver).
+Canonical rules: **time-tracker-api** `docs/PROJECT_APPROACH.md` § Git and PR workflow and § Releases (semver).
 
 ## Shell
 

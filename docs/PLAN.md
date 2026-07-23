@@ -6,9 +6,9 @@
 |--------|--------|
 | Executable | `tt` |
 | Language | **Go** (native binary, Windows + Linux) |
-| API scope | **Implemented endpoints only** (~70 routes in [time-tracker-api `IMPLEMENTED_ROUTES`](https://github.com/stage3technical/time-tracker-api/blob/main/src/time_tracker_api/routes/v1_stubs.py) plus `GET /timesheets/{person_id}`, `POST /persons/import`, `GET /health`, `GET /me`, `POST /items`) |
+| API scope | **Implemented endpoints only** (~70 routes in **time-tracker-api** `src/time_tracker_api/routes/v1_stubs.py` `IMPLEMENTED_ROUTES` plus `GET /timesheets/{person_id}`, `POST /persons/import`, `GET /health`, `GET /me`, `POST /items`) |
 | Transport | HTTPS + `Authorization: Bearer <JWT>` |
-| Repo | [`time-tracker-cli`](https://github.com/stage3technical/time-tracker-cli) |
+| Repo | `time-tracker-cli` |
 
 ## Architecture
 
@@ -102,7 +102,7 @@ tt persons manager get 96480ff9-fe32-482a-b553-fe46980b81bf
 
 ### Phase 2 — remaining implemented resources
 
-Mirror API route groups from [time-tracker-api routes](https://github.com/stage3technical/time-tracker-api/tree/main/src/time_tracker_api/routes):
+Mirror API route groups from **time-tracker-api** `src/time_tracker_api/routes`:
 
 | Group | Commands | API prefix |
 |-------|----------|------------|

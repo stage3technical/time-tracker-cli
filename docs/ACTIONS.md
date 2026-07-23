@@ -1,6 +1,6 @@
 # CLI actions by API group
 
-Commands call the **BLVD Timesheet HTTP API** only — no direct DynamoDB. Groupings match the API Swagger tags ([time-tracker-api `v1_stub_tags.py`](https://github.com/stage3technical/time-tracker-api/blob/develop/src/time_tracker_api/routes/v1_stub_tags.py)).
+Commands call the **BLVD Timesheet HTTP API** only — no direct DynamoDB. Groupings match the API Swagger tags (**time-tracker-api** `src/time_tracker_api/routes/v1_stub_tags.py`).
 
 Legend: **implemented** = first-class `tt` subcommand · **api** = use `tt api` until wrapped · **—** = not in API yet
 
@@ -209,4 +209,4 @@ tt api METHOD PATH [--query key=value] [--body @file.json]
 
 - [CLI.md](CLI.md) — install, config, global flags
 - [PLAN.md](PLAN.md) — roadmap
-- [api-implementation-status.md](https://github.com/stage3technical/time-tracker-api/blob/develop/docs/api-spec/api-implementation-status.md) — which API routes are real vs stub
+- **time-tracker-api** `docs/api-spec/api-implementation-status.md` — which API routes are real vs stub
