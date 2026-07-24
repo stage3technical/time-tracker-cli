@@ -85,7 +85,7 @@ func TestDefaultProfileName(t *testing.T) {
 
 func TestListProfiles(t *testing.T) {
 	f := newTestConfig(t, "dev", "https://x.com", "t")
-	if err := SetProfile(f, "uat", "https://uat.com", "t2"); err != nil {
+	if err := SetProfile(f, "staging", "https://staging.example.com", "t2"); err != nil {
 		t.Fatal(err)
 	}
 	names := ListProfiles(f)
